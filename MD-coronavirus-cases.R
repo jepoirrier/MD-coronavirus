@@ -16,7 +16,9 @@ MDCasesNCols <- 28
 # then all the other counties
 
 dat <- read.csv(MDCasesFile, sep = " ", colClasses = c(rep("numeric", MDCasesNCols)))
-#dat$DateTime <- as.POSIXct(dat$Date, format = "%m/%d/%y")
+
+lastDateCases = as.Date(sprintf("%d",max(dat$Date)), "%y%m%d")
+lastMaxPositiveCases = max(dat$Positive)
 
 # ***** Trends in number of cases by totals over time *****
 
@@ -29,16 +31,25 @@ dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "Total", values_to 
 dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
 
 p <- ggplot(dt, aes(x = Date, y = Tests, group = Total)) +
+  # log scale and 33% daily as in FT graph
+  scale_y_log10() + annotation_logticks() +
+  #geom_abline(intercept = 1, slope = 33) +
   geom_line(aes(color = Total)) +
-  geom_point(aes(color = Total)) +
+  geom_point(aes(color = Total, shape = Total)) +
   labs(title = "Evolution of Coronavirus testing in Maryland, USA (2020)",
        x = "Date",
-       y = "Tests counts",
-       caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
+       y = "Tests counts (log scale!)",
+       caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y"))) +
+  # manually place the arrow and label highlighting the last data
+  annotate("segment", x = as.Date(lastDateCases) - 0.5, y = lastMaxPositiveCases - 100,
+           xend = as.Date(lastDateCases), yend = lastMaxPositiveCases - 50,
+           size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+  annotate("text", label = paste("Last number of\ncases:", lastMaxPositiveCases),
+           x = as.Date(lastDateCases) - 1, y = lastMaxPositiveCases - 150,
+           size = 3, fontface = "italic")
+
 p # optional
 ggsave("MD-coronavirus-cases.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
-
-
 
 # ***** Trends in number of cases by COUNTY over time *****
 
