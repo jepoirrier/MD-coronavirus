@@ -5,35 +5,35 @@
 library(ggplot2)
 library(tidyr)
 
-MDCasesFile = 'MD-coronavirus-cases.txt'
-MDCasesNCols <- 28
+# ***** Trends in number of cases by totals over time *****
+
+MDCasesFile = 'MD-coronavirus-cases2.txt' # change in file (only for totals)
+MDCasesNCols <- 6
 # Space-delimited file with NCols fields:
 # Date: date in YearMonthDay format
-# TotalNegative: number of total negative cases (was not shown after March 11, 2020)
-# TotalPositive: number of total positive cases
-# TotalDeath: number of total deaths linked with positive cases
-# AnneArundel: number of positive cases in Anne Arundel County (started on March 15, 2020)
-# then all the other counties
+# Negative: number of total negative cases (was not shown after March 11, 2020)
+# Positive: number of total positive cases
+# Death: number of total deaths linked with positive cases
+# Hospitalizations: number of people ever hospitalized
+# Released: number of people released from hospital
 
 dat <- read.csv(MDCasesFile, sep = " ", colClasses = c(rep("numeric", MDCasesNCols)))
 
-lastDateCases = as.Date(sprintf("%d",max(dat$Date)), "%y%m%d")
+lastDateCases <- as.Date(sprintf("%d",max(dat$Date)), "%y%m%d")
 lastMaxPositiveCases = max(dat$Positive)
 
-# ***** Trends in number of cases by totals over time *****
-
 cols2pivot <- colnames(dat) # headers of columns to pivot
-cols2pivot[2:4] <- c("Negative", "Positive", "Deaths")
+cols2pivot[2:6] <- c("Negative", "Positive", "Deaths", "Hospitalizations", "Released")
 colnames(dat) <- cols2pivot
-cols2pivot <- cols2pivot[2:4] # we don't need "Date" nor states
+cols2pivot <- cols2pivot[2:6] # we don't need "Date"
 
-dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "Total", values_to = "Tests", values_drop_na = TRUE)
+dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "Total", values_to = "Tests") # don't drop NAs because Negative tests came back on 3/28
 dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
 
 p <- ggplot(dt, aes(x = Date, y = Tests, group = Total)) +
   # log scale and 33% daily as in FT graph
   scale_y_log10() + annotation_logticks() +
-  #geom_abline(intercept = 1, slope = 33) +
+  geom_abline(intercept = 1, slope = 33) +
   geom_line(aes(color = Total)) +
   geom_point(aes(color = Total, shape = Total)) +
   labs(title = "Evolution of Coronavirus testing in Maryland, USA (2020)",
@@ -41,11 +41,11 @@ p <- ggplot(dt, aes(x = Date, y = Tests, group = Total)) +
        y = "Tests counts (log scale!)",
        caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y"))) +
   # manually place the arrow and label highlighting the last data
-  annotate("segment", x = as.Date(lastDateCases) - 0.5, y = lastMaxPositiveCases - 100,
-           xend = as.Date(lastDateCases), yend = lastMaxPositiveCases - 50,
+  annotate("segment", x = as.Date(lastDateCases) -0.5 , y = lastMaxPositiveCases + 1000,
+           xend = as.Date(lastDateCases), yend = lastMaxPositiveCases + 100,
            size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
   annotate("text", label = paste("Last number of\ncases:", lastMaxPositiveCases),
-           x = as.Date(lastDateCases) - 1, y = lastMaxPositiveCases - 150,
+           x = as.Date(lastDateCases) - 1, y = lastMaxPositiveCases + 2000,
            size = 3, fontface = "italic")
 
 p # optional
@@ -53,8 +53,20 @@ ggsave("MD-coronavirus-cases.png", plot = p, device = "png", width = 3840/300, h
 
 # ***** Trends in number of cases by COUNTY over time *****
 
+MDCountiesFile <- 'MD-coronavirus-counties.txt'
+MDCountiesNCols <- 25
+# Space-delimited file with NCols fields:
+# Date: date in YearMonthDay format
+# AnneArundel: number of positive cases in Anne Arundel County (started on March 15, 2020)
+# then all the other counties
+
+dat <- read.csv(MDCountiesFile, sep = " ", colClasses = c(rep("numeric", MDCasesNCols)))
+
+lastDateCases <- as.Date(sprintf("%d",max(dat$Date)), "%y%m%d")
+lastMaxCountyCases = max(dat$Montgomery) # manually find the county with max cases
+
 cols2pivot <- colnames(dat) # headers of columns to pivot
-cols2pivot <- cols2pivot[5:length(cols2pivot)] # we don't need "Date" nor totals
+cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date" nor totals
 
 dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "County", values_to = "Tests", values_drop_na = TRUE)
 dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
@@ -72,24 +84,33 @@ ggsave("MD-coronavirus-counties.png", plot = p, device = "png", width = 3840/300
 # ***** Trends in number of cases by age group over time *****
 
 MDAgeFile = 'MD-coronavirus-byage.txt'
-MDAgeNCols <- 4
+MDAgeNCols <- 15
 # Space-delimited file with NCols fields:
 # Date: date in YearMonthDate format
+# 0-9: number of positive cases aged 0 to 9 years old
+# 10-19: number of positive cases aged 10 to 19years old
+# 20-29: number of positive cases aged 20 to 29 years old
+# 30-39: number of positive cases aged 30 to 39 years old
+# 40-49: number of positive cases aged 40 to 49 years old
+# 50-59: number of positive cases aged 50 to 59 years old
+# 60-69: number of positive cases aged 60 to 69 years old
+# 70-79: number of positive cases aged 70 to 79 years old
+# 80+: number of positive cases aged 80 years old and over
 # 0-18: number of positive cases aged 0 to 18 years old
 # 19-64: number of positive cases aged 19 to 64 years old
 # 65plus: number of positive cases aged 65 years old and more
 
-dat2 <- read.csv(MDAgeFile, sep = " ", colClasses = c(rep("numeric", MDAgeNCols)))
+dat <- read.csv(MDAgeFile, sep = " ", colClasses = c(rep("numeric", MDAgeNCols)))
 
-cols2pivot <- colnames(dat2) # headers of columns to pivot
-cols2pivot[2:4] <- c("0-18", "19-64", "65+")
-colnames(dat2) <- cols2pivot
-cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date" nor totals
+cols2pivot <- colnames(dat) # headers of columns to pivot
+cols2pivot <- c("Date", "0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+", "0-18", "19-64", "65+", "Female", "Male")
+colnames(dat) <- cols2pivot
+cols2pivot <- cols2pivot[2:(MDAgeNCols-2)] # we don't need "Date" nor sex
 
-dt2 <- pivot_longer(data = dat2, cols = cols2pivot, names_to = "AgeGroups", values_to = "Tests", values_drop_na = TRUE)
-dt2$Date <- as.Date(sprintf("%d",dt2$Date), "%y%m%d")
+dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "AgeGroups", values_to = "Tests", values_drop_na = TRUE)
+dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
 
-p <- ggplot(dt2, aes(x = Date, y = Tests, group = AgeGroups)) +
+p <- ggplot(dt, aes(x = Date, y = Tests, group = AgeGroups)) +
   geom_line(aes(color = AgeGroups)) +
   geom_point(aes(color = AgeGroups, shape = AgeGroups)) +
   labs(title = "Evolution of Coronavirus testing in Maryland by age group, USA (2020)",
