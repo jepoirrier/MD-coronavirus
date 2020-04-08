@@ -169,7 +169,7 @@ p <- ggplot(dt, aes(x = Date, y = Tests, group = County)) +
   geom_point(aes(color = County, shape = County)) +
   labs(title = "Evolution of Coronavirus testing in Maryland counties, USA (2020)",
        x = "Date",
-       y = "Tests counts",
+       y = "Positive Tests counts",
        caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
 p # optional
 ggsave("MD-coronavirus-counties.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
@@ -240,3 +240,4 @@ p <- ggplot(dt, aes(x = AgeGroups, y = Tests)) +
        caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
 p # optional
 ggsave("MD-coronavirus-byage-grp.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
+
