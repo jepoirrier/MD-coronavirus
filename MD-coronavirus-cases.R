@@ -50,8 +50,8 @@ lastDateCountyDeaths <- as.Date(sprintf("%d",max(datCountyDeaths$Date)), "%y%m%d
 lastMaxCountyDeaths = max(datCountyDeaths$PrinceGeorges) # TODO manually find the county with max deaths - TODO change this behavior
 
 # Read the data from the age groups: cases (new version since March 27) & deaths (included since April 9)
-MDAgeFile = 'MD-coronavirus-byage2.txt' # Switch for 2nd version of age groups presented by MDH
-MDAgeNCols <- 19
+MDAgeFile = 'MD-coronavirus-byage3.txt' # Switch for 3rd version of age groups presented by MDH
+MDAgeNCols <- 4
 # Space-delimited file with fields:
 # Date: date in YearMonthDate format
 # 0-9: number of positive cases aged 0 to 9 years old
@@ -64,7 +64,7 @@ MDAgeNCols <- 19
 # 70-79: number of positive cases aged 70 to 79 years old
 # 80+: number of positive cases aged 80 years old and over
 # D...: number of deaths in the age category
-datAge <- read.csv(MDAgeFile, sep = " ", colClasses = c(rep("numeric", MDAgeNCols)))
+datAge <- read.csv(MDAgeFile, sep = " ", colClasses = c("numeric", "character", "character", "numeric"))
 
 # Read data by gender
 MDGenderFile = 'MD-coronavirus-bygender.txt'

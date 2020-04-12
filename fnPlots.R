@@ -183,52 +183,33 @@ plotCountyDeathsOverTime <- function(dat) {
 }
 
 #' Plot the trends in number of cases by age group over time
-#' needs data from byage2.txt
+#' needs data from byage3.txt
 plotAgeGroupsCases <- function(dat) {
+
+  dat$Date <- as.Date(sprintf("%d",dat$Date), "%y%m%d")
   
-  limitCasesCol <- 10
-  dat <- dat[1:limitCasesCol]
-  
-  cols2pivot <- colnames(dat)
-  cols2pivot <- c("Date", "0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+")
-  colnames(dat) <- cols2pivot
-  cols2pivot <- cols2pivot[2:limitCasesCol] # we don't need "Date"
-  
-  dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "AgeGroups", values_to = "Tests", values_drop_na = TRUE)
-  dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
-  
-  p <- ggplot(dt, aes(x = Date, y = Tests, group = AgeGroups)) +
-    geom_line(aes(color = AgeGroups)) +
-    geom_point(aes(color = AgeGroups, shape = AgeGroups)) +
+  p <- ggplot(subset(dat, CountType == "PosTests"), aes(x = Date, y = Count, group = AgeGroup)) +
+    geom_line(aes(color = AgeGroup)) +
+    geom_point(aes(color = AgeGroup, shape = AgeGroup)) +
     labs(title = "Evolution of Coronavirus testing by age group in Maryland, USA (2020)",
          x = "Date",
          y = "Tests counts",
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
-  
+
   ggsave("figures/MD-coronavirus-byage.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
   
   return(p)
 }
 
 #' Plot the trends in number of deaths by age group over time
-#' needs data from byage2.txt
+#' needs data from byage3.txt
 plotAgeGroupsDeaths <- function(dat) {
   
-  cols2keep <- c(1,11:19)
-  limitCasesCol <- 10
-  dat <- dat[,cols2keep]
+  dat$Date <- as.Date(sprintf("%d",dat$Date), "%y%m%d")
   
-  cols2pivot <- colnames(dat)
-  cols2pivot <- c("Date", "0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+")
-  colnames(dat) <- cols2pivot
-  cols2pivot <- cols2pivot[2:limitCasesCol] # we don't need "Date"
-  
-  dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "AgeGroups", values_to = "Deaths", values_drop_na = TRUE)
-  dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
-  
-  p <- ggplot(dt, aes(x = Date, y = Deaths, group = AgeGroups)) +
-    geom_line(aes(color = AgeGroups)) +
-    geom_point(aes(color = AgeGroups, shape = AgeGroups)) +
+  p <- ggplot(subset(dat, CountType == "Deaths"), aes(x = Date, y = Count, group = AgeGroup)) +
+    geom_line(aes(color = AgeGroup)) +
+    geom_point(aes(color = AgeGroup, shape = AgeGroup)) +
     labs(title = "Evolution of Coronavirus deaths by age group in Maryland, USA (2020)",
          x = "Date",
          y = "Total number of deaths",
@@ -242,26 +223,20 @@ plotAgeGroupsDeaths <- function(dat) {
 #' Plot the latest sectional data # cases and deaths by age group
 #' needs data from byage2.txt
 plotAgeGroupsSection <- function(dat) {
-  dat <- dat[,1:10] # TODO add deaths
   
-  cols2pivot <- colnames(dat)
-  cols2pivot <- c("Date", "0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+")
-  colnames(dat) <- cols2pivot
-  cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
+  dat$Date <- as.Date(sprintf("%d",dat$Date), "%y%m%d")
   
-  dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "AgeGroups", values_to = "Tests", values_drop_na = TRUE)
-  dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
-  dt <- dt[(nrow(dt)-8):(nrow(dt)),]
-  
-  p <- ggplot(dt, aes(x = AgeGroups, y = Tests)) +
-    geom_bar(stat="identity", fill="steelblue") +
+  p <- ggplot(dat, aes(x = AgeGroup, y = Count, fill = CountType)) +
+    geom_bar(stat = "identity", position = position_dodge()) +
+    scale_fill_manual(name = "Legend", labels = c("Deaths", "Positive tests"), values = c('#999999', "steelblue")) +
     theme_minimal() +
-    geom_text(aes(label=Tests), vjust=1.6, color="white", size=3.5)+
-    labs(title = "Age distribution of all Coronavirus positive tests in Maryland, USA (2020)",
+    #geom_text(aes(label=Count), vjust=1.6, color="white", size=3.5)+
+    labs(title = "Age distribution of all Coronavirus cases in Maryland, USA (2020)",
+         color = "Legend", 
          x = "Age groups (years)",
-         y = "Tests counts",
+         y = "Counts",
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
-  
+
   ggsave("figures/MD-coronavirus-byage-grp.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
   
   return(p)
