@@ -86,6 +86,37 @@ plotDailyCasesOverTime <- function(dat, logScale = FALSE) {
   return(p)
 }
 
+#' Plot the approximate trend in currently sick patients
+#' This is calculated by removing "released" patients from "hospitalized" patients
+#' (only an approximation because of lag, data not available since the beginning, etc.)
+plotCurrentlySickPatients <- function(dat, logScale = FALSE) {
+  
+  if(logScale)
+    logWarning = " (log scale!)"
+  else
+    logWarning = ""
+  
+  # compute currently sick patients (CSP) = hospitalizations - released (each day)
+  dat$CSP <- dat$Hospitalizations - dat$Released
+  dat$Date <- as.Date(sprintf("%d",dat$Date), "%y%m%d")
+  
+  dt <- subset(dat, select = c("Date", "CSP")) # we just need those 2
+  
+  p <- ggplot(dt, aes(x = Date, y = CSP)) +
+    {if(logScale) scale_y_log10()} +
+    {if(logScale) annotation_logticks()} +
+    geom_line() +
+    geom_point() +
+    labs(title = "Daily *approximate* number of patients hospitalized due to Coronavirus in Maryland, USA (2020)",
+         x = "Date",
+         y = paste("Approx. # of patients hospitalized on each day", logWarning),
+         caption = paste("Note: # patients currently hospitalized = # patients hospitalized - # patients released\nData from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
+  
+  ggsave("figures/MD-coronavirus-cases-CSP.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
+  
+  return(p)
+}
+
 #' Plot the total number of tests made & the positive ratio over time
 #' needs data from cases2.txt
 plotPositiveTestPc <- function(dat, lastDateCases, lastMaxPositiveCases) {

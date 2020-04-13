@@ -54,16 +54,9 @@ MDAgeFile = 'MD-coronavirus-byage3.txt' # Switch for 3rd version of age groups p
 MDAgeNCols <- 4
 # Space-delimited file with fields:
 # Date: date in YearMonthDate format
-# 0-9: number of positive cases aged 0 to 9 years old
-# 10-19: number of positive cases aged 10 to 19years old
-# 20-29: number of positive cases aged 20 to 29 years old
-# 30-39: number of positive cases aged 30 to 39 years old
-# 40-49: number of positive cases aged 40 to 49 years old
-# 50-59: number of positive cases aged 50 to 59 years old
-# 60-69: number of positive cases aged 60 to 69 years old
-# 70-79: number of positive cases aged 70 to 79 years old
-# 80+: number of positive cases aged 80 years old and over
-# D...: number of deaths in the age category
+# AgeGroup: age group of cases (0-9, 10-19, 20-20, 30-39, 40-49, 50-59, 60-69, 70-79, 80+)
+# CountType: either 'PosTests" (# positive tests) or 'Deaths' (# deaths)
+# Count: the count .. 
 datAge <- read.csv(MDAgeFile, sep = " ", colClasses = c("numeric", "character", "character", "numeric"))
 
 # Read data by gender
@@ -94,6 +87,8 @@ datRace <- read.csv(MDRaceFile, sep = " ", colClasses = c(rep("numeric", MDRaceN
 p <- plotTotalCasesOverTime(datCases, lastDateCases, lastMaxPositiveCases, logScale = TRUE)
 p
 p <- plotDailyCasesOverTime(datCases, logScale = FALSE)
+p
+p <- plotCurrentlySickPatients(datCases, logScale = FALSE)
 p
 p <- plotPositiveTestPc(datCases, lastDateCases, lastMaxPositiveCases)
 p
