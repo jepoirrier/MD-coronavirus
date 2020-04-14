@@ -182,7 +182,7 @@ plotCountyCasesOverTime <- function(dat) {
     geom_point(aes(color = County, shape = County)) +
     labs(title = "Evolution of Coronavirus testing in Maryland counties, USA (2020)",
          x = "Date",
-         y = "Positive Tests counts",
+         y = "Positive tests count",
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
   ggsave("figures/MD-coronavirus-counties.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
@@ -224,7 +224,7 @@ plotAgeGroupsCases <- function(dat) {
     geom_point(aes(color = AgeGroup, shape = AgeGroup)) +
     labs(title = "Evolution of Coronavirus testing by age group in Maryland, USA (2020)",
          x = "Date",
-         y = "Tests counts",
+         y = "Positive tests count",
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
 
   ggsave("figures/MD-coronavirus-byage.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
@@ -265,7 +265,7 @@ plotAgeGroupsSection <- function(dat) {
     labs(title = "Age distribution of all Coronavirus cases in Maryland, USA (2020)",
          color = "Legend", 
          x = "Age groups (years)",
-         y = "Counts",
+         y = "Positive tests count",
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
 
   ggsave("figures/MD-coronavirus-byage-grp.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
