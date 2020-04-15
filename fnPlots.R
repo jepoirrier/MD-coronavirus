@@ -332,8 +332,6 @@ plotRaceCasesOverTime <- function(dat) {
 
 #' Plot the latest sectional data for # cases by race
 #' needs data from byrace.txt
-
-# ***** Slight variation, just for the latest data -> bar chart for tests *****
 plotRaceSection <- function(dat) {
   
   limitCasesCol <- 6
@@ -359,6 +357,27 @@ plotRaceSection <- function(dat) {
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
   ggsave("figures/MD-coronavirus-byrace-grp.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
+  
+  return(p)
+}
+
+#' Plot the trend in number of cases by zip code over time
+#' needs data from ZIP.txt
+plotZipCasesOverTime <- function(dat, zip2highlight = 21215) {
+  dat$Date <- as.Date(sprintf("%d", dat$Date), "%y%m%d")
+  dat$ZipCode <- as.factor(as.character(dat$ZipCode))
+  #dat <- subset(dat, max(dat$Cases) > 100)
+  
+  p <- ggplot(dat, aes(x = Date, y = Cases, group = ZipCode)) +
+    geom_line(aes(color = ZipCode)) +
+    gghighlight(ZipCode == zip2highlight) +
+    theme(legend.position = "none") +
+    labs(title = "Evolution of Coronavirus positive cases by zip codes in Maryland, USA (2020)",
+         x = "Date",
+         y = "Positive tests counts",
+         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
+  p
+  ggsave("figures/MD-coronavirus-byZip.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
   
   return(p)
 }

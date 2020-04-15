@@ -12,7 +12,7 @@ library(tidyr)
 source("fnPlots.R")
 
 # Read the data with total cases
-MDCasesFile = 'MD-coronavirus-cases2.txt'
+MDCasesFile <- 'MD-coronavirus-cases2.txt'
 MDCasesNCols <- 6
 # Space-delimited file with fields:
 # Date: date in YearMonthDay format
@@ -50,7 +50,7 @@ lastDateCountyDeaths <- as.Date(sprintf("%d",max(datCountyDeaths$Date)), "%y%m%d
 lastMaxCountyDeaths = max(datCountyDeaths$PrinceGeorges) # TODO manually find the county with max deaths - TODO change this behavior
 
 # Read the data from the age groups: cases (new version since March 27) & deaths (included since April 9)
-MDAgeFile = 'MD-coronavirus-byage3.txt' # Switch for 3rd version of age groups presented by MDH
+MDAgeFile <- 'MD-coronavirus-byage3.txt' # Switch for 3rd version of age groups presented by MDH
 MDAgeNCols <- 4
 # Space-delimited file with fields:
 # Date: date in YearMonthDate format
@@ -60,7 +60,7 @@ MDAgeNCols <- 4
 datAge <- read.csv(MDAgeFile, sep = " ", colClasses = c("numeric", "character", "character", "numeric"))
 
 # Read data by gender
-MDGenderFile = 'MD-coronavirus-bygender.txt'
+MDGenderFile <- 'MD-coronavirus-bygender.txt'
 MDGenderCols <- 5
 # Space-delimited file with fields:
 # Date: date in YearMonthDate format
@@ -71,7 +71,7 @@ MDGenderCols <- 5
 datGender <- read.csv(MDGenderFile, sep = " ", colClasses = c(rep("numeric", MDGenderCols)))
 
 # Read data for race distribution
-MDRaceFile = 'MD-coronavirus-byrace.txt'
+MDRaceFile <- 'MD-coronavirus-byrace.txt'
 MDRaceNCols <- 11
 # Space-delimited file with fields:
 # Date: date in YearMonthDate format
@@ -82,6 +82,11 @@ MDRaceNCols <- 11
 # DataNotAvailable: number of cases for which data is not available
 # D...: number of deaths for that community
 datRace <- read.csv(MDRaceFile, sep = " ", colClasses = c(rep("numeric", MDRaceNCols)))
+
+# Read data for ZIP cases
+MDZIPFile <- 'MD-corona-ZIP.txt'
+MDZIPNCols <- 3
+datZip <- read.csv(MDZIPFile, sep = " ", colClasses = c(rep("numeric", MDZIPNCols)))
 
 # Plot things now
 p <- plotTotalCasesOverTime(datCases, lastDateCases, lastMaxPositiveCases, logScale = TRUE)
@@ -107,4 +112,6 @@ p
 p <- plotRaceCasesOverTime(datRace)
 p
 p <- plotRaceSection(datRace)
+p
+p <- plotZipCasesOverTime(datZip)
 p
