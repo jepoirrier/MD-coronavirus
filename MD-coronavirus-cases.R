@@ -13,12 +13,13 @@ source("fnPlots.R")
 
 # Read the data with total cases
 MDCasesFile <- 'MD-coronavirus-cases2.txt'
-MDCasesNCols <- 6
+MDCasesNCols <- 7
 # Space-delimited file with fields:
 # Date: date in YearMonthDay format
 # Negative: number of total negative cases (gap in data published between March 11 and March 28, 2020)
 # Positive: number of total positive cases
-# Death: number of total deaths linked with positive cases
+# Deaths: number of total deaths linked with positive cases - after April 15, it became: confirmed deaths
+# PDeaths: number of probable deaths due to COVID-19 (after April 15)
 # Hospitalizations: number of people ever hospitalized
 # Released: number of people released from hospital
 datCases <- read.csv(MDCasesFile, sep = " ", colClasses = c(rep("numeric", MDCasesNCols)))
@@ -29,11 +30,12 @@ lastMaxPositiveCases = max(datCases$Positive, na.rm = TRUE)
 
 # Read the data from the counties
 MDCountiesFile <- 'MD-coronavirus-counties.txt'
-MDCountiesNCols <- 25
+MDCountiesNCols <- 26
 # Space-delimited file with fields:
 # Date: date in YearMonthDay format
 # AnneArundel: number of positive cases in Anne Arundel County (started on March 15, 2020)
 # then all the other counties
+# DnA (last field) = Data Not Available (since April 15)
 datCounty <- read.csv(MDCountiesFile, sep = " ", colClasses = c(rep("numeric", MDCountiesNCols)))
 lastDateCounty <- as.Date(sprintf("%d",max(datCounty$Date)), "%y%m%d")
 lastMaxCounty = max(datCounty$PrinceGeorges) # TODO manually find the county with max cases - TODO change this behavior
@@ -61,18 +63,15 @@ datAge <- read.csv(MDAgeFile, sep = " ", colClasses = c("numeric", "character", 
 
 # Read data by gender
 MDGenderFile <- 'MD-coronavirus-bygender.txt'
-MDGenderCols <- 5
 # Space-delimited file with fields:
 # Date: date in YearMonthDate format
-# Female: number of female positive cases
-# Male: number of male positive cases
-# DFemale: number of female deaths
-# DMale: number of male deaths
-datGender <- read.csv(MDGenderFile, sep = " ", colClasses = c(rep("numeric", MDGenderCols)))
+# Gender: either Male, Female, DMale, DFemale, PDMale or PDFemale
+# with no prefix = cases, prefix "D" = cases deaths (confirmed), prefix "PD" = probable deaths
+datGender <- read.csv(MDGenderFile, sep = " ", colClasses = c("numeric", "character", "numeric"))
 
 # Read data for race distribution
 MDRaceFile <- 'MD-coronavirus-byrace.txt'
-MDRaceNCols <- 11
+MDRaceNCols <- 19
 # Space-delimited file with fields:
 # Date: date in YearMonthDate format
 # AfricanAmerican: number of cases in African-Americans
@@ -97,21 +96,27 @@ p <- plotCurrentlySickPatients(datCases, logScale = FALSE)
 p
 p <- plotPositiveTestPc(datCases, lastDateCases, lastMaxPositiveCases)
 p
+
 p <- plotCountyCasesOverTime(datCounty)
 p
+
 p <- plotCountyDeathsOverTime(datCountyDeaths)
 p
+
 p <- plotAgeGroupsCases(datAge)
 p
 p <- plotAgeGroupsDeaths(datAge)
 p
 p <- plotAgeGroupsSection(datAge)
 p
+
 p <- plotGenderSection(datGender)
 p
+
 p <- plotRaceCasesOverTime(datRace)
 p
 p <- plotRaceSection(datRace)
 p
+
 p <- plotZipCasesOverTime(datZip)
 p

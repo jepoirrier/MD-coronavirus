@@ -10,9 +10,9 @@ plotTotalCasesOverTime <- function(dat, lastDateCases, lastMaxPositiveCases, log
     logWarning = ""
   
   cols2pivot <- colnames(dat)
-  cols2pivot[2:6] <- c("Negative", "Positive", "Deaths", "Hospitalizations", "Released")
+  cols2pivot[2:7] <- c("Negative", "Positive", "Deaths", "Probable Deaths", "Hospitalizations", "Released")
   colnames(dat) <- cols2pivot
-  cols2pivot <- cols2pivot[2:6] # we don't need "Date"
+  cols2pivot <- cols2pivot[2:7] # we don't need "Date"
   
   dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "Total", values_to = "Tests") # don't drop NAs because Negative tests came back on 3/28
   dt$Date <- as.Date(sprintf("%d", dt$Date), "%y%m%d")
@@ -58,15 +58,17 @@ plotDailyCasesOverTime <- function(dat, logScale = FALSE) {
   dat <- dat %>%
     mutate(deltaDeaths = Deaths - lag(Deaths, default = 0))
   dat <- dat %>%
+    mutate(deltaPDeaths = PDeaths - lag(PDeaths, default = 0))
+  dat <- dat %>%
     mutate(deltaHospitalizations = Hospitalizations - lag(Hospitalizations, default = 0))
   dat <- dat %>%
     mutate(deltaReleased = Released - lag(Released, default = 0))
   
   cols2pivot <- colnames(dat)
-  cols2pivot[2:6] <- c("TotalNegative", "TotalPositive", "TotalDeaths", "TotalHospitalizations", "TotalReleased")
-  cols2pivot[7:11] <- c("Negative", "Positive", "Deaths", "Hospitalizations", "Released")
+  cols2pivot[2:7] <- c("TotalNegative", "TotalPositive", "TotalDeaths", "TotalPDeaths", "TotalHospitalizations", "TotalReleased")
+  cols2pivot[8:12] <- c("Negative", "Positive", "Deaths", "Probable Deaths", "Hospitalizations", "Released")
   colnames(dat) <- cols2pivot
-  cols2pivot <- cols2pivot[7:11] # we don't need "Date"
+  cols2pivot <- cols2pivot[8:12] # we don't need "Date"
   
   dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "Delta", values_to = "DailyVariation") # don't drop NAs because Negative tests came back on 3/28
   dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
@@ -180,10 +182,10 @@ plotCountyCasesOverTime <- function(dat) {
   p <- ggplot(dt, aes(x = Date, y = Tests, group = County)) +
     geom_line(aes(color = County)) +
     geom_point(aes(color = County, shape = County)) +
-    labs(title = "Evolution of Coronavirus testing in Maryland counties, USA (2020)",
+    labs(title = "Evolution of COVID-19 testing in Maryland counties, USA (2020)",
          x = "Date",
-         y = "Positive tests count",
-         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
+         y = "Cases",
+         caption = paste("DnA = Data not Available\nData from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
   ggsave("figures/MD-coronavirus-counties.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
   
@@ -203,10 +205,10 @@ plotCountyDeathsOverTime <- function(dat) {
   p <- ggplot(dt, aes(x = Date, y = Deaths, group = County)) +
     geom_line(aes(color = County)) +
     geom_point(aes(color = County, shape = County)) +
-    labs(title = "Evolution of Coronavirus deaths in Maryland counties, USA (2020)",
+    labs(title = "Evolution of COVID-19-confirmed deaths in Maryland counties, USA (2020)",
          x = "Date",
          y = "Number of deaths",
-         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
+         caption = paste("DnA = Data not Available\nData from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
   ggsave("figures/MD-coronavirus-counties-deaths.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
   
@@ -222,9 +224,9 @@ plotAgeGroupsCases <- function(dat) {
   p <- ggplot(subset(dat, CountType == "PosTests"), aes(x = Date, y = Count, group = AgeGroup)) +
     geom_line(aes(color = AgeGroup)) +
     geom_point(aes(color = AgeGroup, shape = AgeGroup)) +
-    labs(title = "Evolution of Coronavirus testing by age group in Maryland, USA (2020)",
+    labs(title = "Evolution of Coronavirus cases by age group in Maryland, USA (2020)",
          x = "Date",
-         y = "Positive tests count",
+         y = "Cases",
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
 
   ggsave("figures/MD-coronavirus-byage.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
@@ -259,14 +261,14 @@ plotAgeGroupsSection <- function(dat) {
   
   p <- ggplot(dat, aes(x = AgeGroup, y = Count, fill = CountType)) +
     geom_bar(stat = "identity", position = position_dodge()) +
-    scale_fill_manual(name = "Legend", labels = c("Deaths", "Positive tests"), values = c('#999999', "steelblue")) +
+    scale_fill_manual(name = "Legend", labels = c("Confirmed deaths", "Probable deaths", "Cases"), values = c("#000000", "#999999", "steelblue")) +
     theme_minimal() +
     #geom_text(aes(label=Count), vjust=1.6, color="white", size=3.5)+
     labs(title = "Age distribution of all Coronavirus cases in Maryland, USA (2020)",
          color = "Legend", 
          x = "Age groups (years)",
-         y = "Positive tests count",
-         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
+         y = "Number",
+         caption = paste("DnA: Data not Available\nData from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
 
   ggsave("figures/MD-coronavirus-byage-grp.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
   
@@ -276,24 +278,22 @@ plotAgeGroupsSection <- function(dat) {
 #' Plot the latest sectional data for # cases by gender
 #' needs data from bygender.txt
 plotGenderSection <- function(dat) {
-  dat <- dat[,1:3] # TODO add deaths
   
-  cols2pivot <- colnames(dat)
-  cols2pivot <- c("Date", "Female", "Male")
-  colnames(dat) <- cols2pivot
-  cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
+  dat$Date <- as.Date(sprintf("%d",dat$Date), "%y%m%d")
+  maxDate = max(dat$Date)
   
-  dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "Gender", values_to = "Tests", values_drop_na = TRUE)
-  dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
-  dt <- dt[(nrow(dt)-1):(nrow(dt)),]
+  dat$Gender[dat$Gender == "DFemale"] <- "Female death"
+  dat$Gender[dat$Gender == "DMale"] <- "Male death"
+  dat$Gender[dat$Gender == "PDFemale"] <- "Female probable death"
+  dat$Gender[dat$Gender == "PDMale"] <- "Male probable death"
   
-  p <- ggplot(dt, aes(x = Gender, y = Tests)) +
-    geom_bar(stat="identity", fill="#CCFFCC") +
+  p <- ggplot(dat[dat$Date == maxDate,], aes(x = Gender, y = Counts)) +
+    geom_bar(stat="identity") +
     theme_minimal() +
-    geom_text(aes(label=Tests), vjust=1.6, color="black", size=3.5)+
-    labs(title = "Gender distribution of Coronavirus positive tests in Maryland, USA (2020)",
+    geom_text(aes(label=format(Counts, scientific = FALSE, big.mark = ",")), vjust=1.6, color="white", size=3.5) +
+    labs(title = "Gender distribution of all Coronavirus cases in Maryland, USA (2020)",
          x = "Gender",
-         y = "Total positive tests counts",
+         y = "Total count",
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
   ggsave("figures/MD-coronavirus-bygender-grp.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
@@ -305,11 +305,11 @@ plotGenderSection <- function(dat) {
 #' needs data from byrace.txt
 plotRaceCasesOverTime <- function(dat) {
   
-  limitCasesCol <- 6
+  limitCasesCol <- 7 # just cases, no deaths, no probable deaths --> TODO
   dat <- dat[1:limitCasesCol]
   
   cols2pivot <- colnames(dat)
-  cols2pivot <- c("Date", "African American", "Asian", "White", "Other", "N.A.")
+  cols2pivot <- c("Date", "African American", "Asian", "White", "Hispanic", "Other", "N.A.")
   colnames(dat) <- cols2pivot
   cols2pivot <- cols2pivot[2:limitCasesCol] # we don't need "Date"
   
@@ -320,9 +320,9 @@ plotRaceCasesOverTime <- function(dat) {
   p <- ggplot(dt, aes(x = Date, y = Tests, group = Races)) +
     geom_line(aes(color = Races)) +
     geom_point(aes(color = Races, shape = Races)) +
-    labs(title = "Evolution of Coronavirus positive tests by race in Maryland, USA (2020)",
+    labs(title = "Evolution of Coronavirus cases by race in Maryland, USA (2020)",
          x = "Date",
-         y = "Positive tests counts",
+         y = "Cases",
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
   ggsave("figures/MD-coronavirus-byrace.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
@@ -334,26 +334,26 @@ plotRaceCasesOverTime <- function(dat) {
 #' needs data from byrace.txt
 plotRaceSection <- function(dat) {
   
-  limitCasesCol <- 6
+  limitCasesCol <- 7
   dat <- dat[1:limitCasesCol] # TODO add deaths
   
   cols2pivot <- colnames(dat)
-  cols2pivot <- c("Date", "African American", "Asian", "White", "Other", "N.A.")
+  cols2pivot <- c("Date", "African American", "Asian", "White", "Hispanic", "Other", "N.A.")
   colnames(dat) <- cols2pivot
   cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
   
   dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "Races", values_to = "Tests", values_drop_na = TRUE)
   dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
-  dt <- dt[(nrow(dt)-4):(nrow(dt)),]
-  dt$Races <- factor(dt$Races, levels = c("African American", "White", "Asian", "Other", "N.A."))
+  dt <- dt[(nrow(dt)-5):(nrow(dt)),]
+  dt$Races <- factor(dt$Races, levels = c("African American", "White", "Hispanic", "Asian", "Other", "N.A."))
   
   p <- ggplot(dt, aes(x = Races, y = Tests)) +
     geom_bar(stat="identity", fill="orange") +
     theme_minimal() +
-    geom_text(aes(label=Tests), vjust=1.6, color="black", size=3.5)+
-    labs(title = "Race distribution of Coronavirus positive tests in Maryland, USA (2020)",
+    geom_text(aes(label=Tests), vjust=1.6, color="black", size=3.5) +
+    labs(title = "Race distribution of Coronavirus cases in Maryland, USA (2020)",
          x = "Races",
-         y = "Total positive tests counts",
+         y = "Cases",
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
   ggsave("figures/MD-coronavirus-byrace-grp.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
