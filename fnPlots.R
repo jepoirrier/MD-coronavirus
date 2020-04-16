@@ -22,7 +22,7 @@ plotTotalCasesOverTime <- function(dat, lastDateCases, lastMaxPositiveCases, log
     {if(logScale) scale_y_log10()} +
     {if(logScale) annotation_logticks()} +
     geom_abline(intercept = 1, slope = 33) +
-    geom_line(aes(color = Total)) +
+    geom_line(aes(color = Total), lwd = 1) +
     geom_point(aes(color = Total, shape = Total)) +
     labs(title = "Evolution of Coronavirus testing in Maryland, USA (2020)",
          x = "Date",
@@ -76,7 +76,7 @@ plotDailyCasesOverTime <- function(dat, logScale = FALSE) {
   p <- ggplot(dt, aes(x = Date, y = DailyVariation, group = Delta)) +
     {if(logScale) scale_y_log10()} +
     {if(logScale) annotation_logticks()} +
-    geom_line(aes(color = Delta)) +
+    geom_line(aes(color = Delta), lwd = 1) +
     geom_point(aes(color = Delta, shape = Delta)) +
     labs(title = "Daily variation of Coronavirus cases in Maryland, USA (2020)",
          x = "Date",
@@ -107,7 +107,7 @@ plotCurrentlySickPatients <- function(dat, logScale = FALSE) {
   p <- ggplot(dt, aes(x = Date, y = CSP)) +
     {if(logScale) scale_y_log10()} +
     {if(logScale) annotation_logticks()} +
-    geom_line() +
+    geom_line(lwd = 1) +
     geom_point() +
     labs(title = "Daily *approximate* number of patients hospitalized due to Coronavirus in Maryland, USA (2020)",
          x = "Date",
@@ -132,7 +132,7 @@ plotPositiveTestPc <- function(dat, lastDateCases, lastMaxPositiveCases) {
   datTT$Date <- as.Date(sprintf("%d", datTT$Date), "%y%m%d")
   
   p <- ggplot(datTT, aes(x = Date, y = TotalTests)) +
-    geom_line() +
+    geom_line(lwd = 1) +
     geom_point() +
     labs(title = "Cumulative number of Coronavirus tests received in Maryland, USA (2020)",
          x = " ",
@@ -146,7 +146,7 @@ plotPositiveTestPc <- function(dat, lastDateCases, lastMaxPositiveCases) {
              size = 3, fontface = "italic")
   
   q <- ggplot(datTT, aes(x = Date, y = PositivePC)) +
-    geom_line() +
+    geom_line(lwd = 1) +
     geom_point() +
     labs(title = "Proportion of positive Coronavirus tests in Maryland, USA (2020)",
          x = "Date",
@@ -180,7 +180,7 @@ plotCountyCasesOverTime <- function(dat) {
   dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
   
   p <- ggplot(dt, aes(x = Date, y = Tests, group = County)) +
-    geom_line(aes(color = County)) +
+    geom_line(aes(color = County), lwd = 1) +
     geom_point(aes(color = County, shape = County)) +
     labs(title = "Evolution of COVID-19 testing in Maryland counties, USA (2020)",
          x = "Date",
@@ -203,7 +203,7 @@ plotCountyDeathsOverTime <- function(dat) {
   dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
   
   p <- ggplot(dt, aes(x = Date, y = Deaths, group = County)) +
-    geom_line(aes(color = County)) +
+    geom_line(aes(color = County), lwd = 1) +
     geom_point(aes(color = County, shape = County)) +
     labs(title = "Evolution of COVID-19-confirmed deaths in Maryland counties, USA (2020)",
          x = "Date",
@@ -222,7 +222,7 @@ plotAgeGroupsCases <- function(dat) {
   dat$Date <- as.Date(sprintf("%d",dat$Date), "%y%m%d")
   
   p <- ggplot(subset(dat, CountType == "PosTests"), aes(x = Date, y = Count, group = AgeGroup)) +
-    geom_line(aes(color = AgeGroup)) +
+    geom_line(aes(color = AgeGroup), lwd = 1) +
     geom_point(aes(color = AgeGroup, shape = AgeGroup)) +
     labs(title = "Evolution of Coronavirus cases by age group in Maryland, USA (2020)",
          x = "Date",
@@ -241,7 +241,7 @@ plotAgeGroupsDeaths <- function(dat) {
   dat$Date <- as.Date(sprintf("%d",dat$Date), "%y%m%d")
   
   p <- ggplot(subset(dat, CountType == "Deaths"), aes(x = Date, y = Count, group = AgeGroup)) +
-    geom_line(aes(color = AgeGroup)) +
+    geom_line(aes(color = AgeGroup), lwd = 1) +
     geom_point(aes(color = AgeGroup, shape = AgeGroup)) +
     labs(title = "Evolution of Coronavirus deaths by age group in Maryland, USA (2020)",
          x = "Date",
@@ -318,7 +318,7 @@ plotRaceCasesOverTime <- function(dat) {
   dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
   
   p <- ggplot(dt, aes(x = Date, y = Tests, group = Races)) +
-    geom_line(aes(color = Races)) +
+    geom_line(aes(color = Races), lwd = 1) +
     geom_point(aes(color = Races, shape = Races)) +
     labs(title = "Evolution of Coronavirus cases by race in Maryland, USA (2020)",
          x = "Date",
