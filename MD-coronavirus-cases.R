@@ -5,6 +5,7 @@
 # Data repository: https://github.com/jepoirrier/MD-coronavirus
 
 library(dplyr)
+library(gghighlight)
 library(ggplot2)
 library(ggpubr)
 library(tidyr)
@@ -90,7 +91,7 @@ datZip <- read.csv(MDZIPFile, sep = " ", colClasses = c(rep("numeric", MDZIPNCol
 # Plot things now
 p <- plotTotalCasesOverTime(datCases, lastDateCases, lastMaxPositiveCases, logScale = TRUE)
 p
-p <- plotDailyCasesOverTime(datCases, logScale = FALSE)
+p <- plotDailyCasesOverTime(datCases, logScale = TRUE)
 p
 p <- plotCurrentlySickPatients(datCases, logScale = FALSE)
 p
