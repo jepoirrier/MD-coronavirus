@@ -1,3 +1,4 @@
 Date Allegany AnneArundel BaltimoreCity BaltimoreCounty Calvert Caroline Carroll Cecil Charles Dorchester Frederick Garrett Harford Howard Kent PrinceGeorges Montgomery QueenAnne Somerset StMary Talbot Washington Wicomico Worcester DnA
 200417 NA 6 4 7 NA NA 2 NA NA NA 7 NA 6 1 NA 10 15 NA NA NA NA NA NA NA 11
 200418 NA 7 3 7 NA NA 2 NA NA NA 8 NA 5 2 NA 10 16 NA NA NA NA NA NA NA 11
+200419 NA 6 5 6 NA NA 1 NA NA NA 5 NA 5 1 NA 7 16 NA NA NA NA NA NA NA 10
