@@ -91,7 +91,7 @@ datZip <- read.csv(MDZIPFile, sep = " ", colClasses = c(rep("numeric", MDZIPNCol
 # Plot things now
 p <- plotTotalCasesOverTime(datCases, lastDateCases, lastMaxPositiveCases, logScale = TRUE)
 p
-p <- plotDailyCasesOverTime(datCases, logScale = TRUE)
+p <- plotDailyCasesOverTime(datCases, logScale = FALSE)
 p
 p <- plotCurrentlySickPatients(datCases, logScale = FALSE)
 p
@@ -100,7 +100,6 @@ p
 
 p <- plotCountyCasesOverTime(datCounty)
 p
-
 p <- plotCountyDeathsOverTime(datCountyDeaths)
 p
 
@@ -119,5 +118,5 @@ p
 p <- plotRaceSection(datRace)
 p
 
-p <- plotZipCasesOverTime(datZip)
+p <- plotZipCasesOverTime(datZip, zip2highlight = 21215)
 p
