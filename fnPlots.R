@@ -10,9 +10,11 @@ plotTotalCasesOverTime <- function(dat, lastDateCases, lastMaxPositiveCases, log
     logWarning = ""
   
   cols2pivot <- colnames(dat)
-  cols2pivot[2:7] <- c("Negative", "Positive", "Deaths", "Probable Deaths", "Hospitalizations", "Released")
+  # Not displaying negative tests anymore
+  #cols2pivot[2:7] <- c("Negative", "Positive", "Deaths", "Probable Deaths", "Hospitalizations", "Released")
+  cols2pivot[3:7] <- c("Positive", "Deaths", "Probable Deaths", "Hospitalizations", "Released")
   colnames(dat) <- cols2pivot
-  cols2pivot <- cols2pivot[2:7] # we don't need "Date"
+  cols2pivot <- cols2pivot[3:7] # we don't need "Date"
   
   dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "Total", values_to = "Tests") # don't drop NAs because Negative tests came back on 3/28
   dt$Date <- as.Date(sprintf("%d", dt$Date), "%y%m%d")
@@ -65,10 +67,10 @@ plotDailyCasesOverTime <- function(dat, logScale = FALSE) {
     mutate(deltaReleased = Released - lag(Released, default = 0))
   
   cols2pivot <- colnames(dat)
-  cols2pivot[2:7] <- c("TotalNegative", "TotalPositive", "TotalDeaths", "TotalPDeaths", "TotalHospitalizations", "TotalReleased")
-  cols2pivot[8:12] <- c("Negative", "Positive", "Deaths", "Probable Deaths", "Hospitalizations", "Released")
+  cols2pivot[2:10] <- c("TotalNegative", "TotalPositive", "TotalDeaths", "TotalPDeaths", "TotalHospitalizations", "TotalReleased", "XCurrentlyHospitalized", "XAcuteCare", "XIntensiveCare")
+  cols2pivot[11:15] <- c("Negative", "Positive", "Deaths", "Probable Deaths", "Hospitalizations", "Released")
   colnames(dat) <- cols2pivot
-  cols2pivot <- cols2pivot[8:12] # we don't need "Date"
+  cols2pivot <- cols2pivot[11:15] # we don't need "Date" - nor Negative
   
   dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "Delta", values_to = "DailyVariation") # don't drop NAs because Negative tests came back on 3/28
   dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
@@ -91,6 +93,7 @@ plotDailyCasesOverTime <- function(dat, logScale = FALSE) {
 #' Plot the approximate trend in currently sick patients
 #' This is calculated by removing "released" patients from "hospitalized" patients
 #' (only an approximation because of lag, data not available since the beginning, etc.)
+#' needs data from cases2.txt as of April 21, 2020
 plotCurrentlySickPatients <- function(dat, logScale = FALSE) {
   
   if(logScale)
@@ -98,22 +101,29 @@ plotCurrentlySickPatients <- function(dat, logScale = FALSE) {
   else
     logWarning = ""
   
+  # Keeping for historical reasons: this is how I calculated CSP up to April 20:
   # compute currently sick patients (CSP) = hospitalizations - released (each day)
-  dat$CSP <- dat$Hospitalizations - dat$Released
-  dat$Date <- as.Date(sprintf("%d",dat$Date), "%y%m%d")
+  #dat$CSP <- dat$Hospitalizations - dat$Released
   
-  dt <- subset(dat, select = c("Date", "CSP")) # we just need those 2
+  dt <- subset(dat, select = c("Date", "CurrentlyHospitalized", "AcuteCare", "IntensiveCare")) # we just need those
+  cols2pivot <- colnames(dt)
+  cols2pivot <- c("Date", "Cur. hospit.", "Acute Care", "ICU")
+  colnames(dt) <- cols2pivot
+  cols2pivot <- cols2pivot[2:4] # we don't need "Date"
+  dt$Date <- as.Date(sprintf("%d",dat$Date), "%y%m%d")
   
-  p <- ggplot(dt, aes(x = Date, y = CSP)) +
+  dt <- pivot_longer(data = dt, cols = cols2pivot, names_to = "HospitalizationType", values_to = "Count")
+  
+  p <- ggplot(dt, aes(x = Date, y = Count, group = HospitalizationType)) +
     {if(logScale) scale_y_log10()} +
     {if(logScale) annotation_logticks()} +
-    geom_line(lwd = 1) +
-    geom_point() +
-    labs(title = "Daily *approximate* number of patients hospitalized due to Coronavirus in Maryland, USA (2020)",
+    geom_line(aes(color = HospitalizationType), lwd = 1) +
+    geom_point(aes(color = HospitalizationType, shape = HospitalizationType)) +
+    labs(title = "Daily number of patients in hospitalization due to Coronavirus in Maryland, USA (2020)",
          x = "Date",
-         y = paste("Approx. # of patients hospitalized on each day", logWarning),
-         caption = paste("Note: # patients currently hospitalized = # patients hospitalized - # patients released\nData from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
-  
+         y = paste("# of patients hospitalized on each day", logWarning),
+         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
+
   ggsave("figures/MD-coronavirus-cases-CSP.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
   
   return(p)
@@ -182,6 +192,7 @@ plotCountyCasesOverTime <- function(dat) {
   p <- ggplot(dt, aes(x = Date, y = Tests, group = County)) +
     geom_line(aes(color = County), lwd = 1) +
     geom_point(aes(color = County, shape = County)) +
+    #gghighlight(County == "Charles") +
     labs(title = "Evolution of COVID-19 testing in Maryland counties, USA (2020)",
          x = "Date",
          y = "Cases",
@@ -205,6 +216,7 @@ plotCountyDeathsOverTime <- function(dat) {
   p <- ggplot(dt, aes(x = Date, y = Deaths, group = County)) +
     geom_line(aes(color = County), lwd = 1) +
     geom_point(aes(color = County, shape = County)) +
+    #gghighlight(County == "Charles") +
     labs(title = "Evolution of COVID-19-confirmed deaths in Maryland counties, USA (2020)",
          x = "Date",
          y = "Number of deaths",
