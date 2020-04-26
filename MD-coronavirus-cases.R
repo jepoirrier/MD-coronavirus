@@ -9,6 +9,7 @@ library(gghighlight)
 library(ggplot2)
 library(ggpubr)
 library(tidyr)
+#library(viridis)
 
 source("fnPlots.R")
 
@@ -89,34 +90,23 @@ MDZIPNCols <- 3
 datZip <- read.csv(MDZIPFile, sep = " ", colClasses = c(rep("numeric", MDZIPNCols)))
 
 # Plot things now
-p <- plotTotalCasesOverTime(datCases, lastDateCases, lastMaxPositiveCases, logScale = TRUE)
-p
-p <- plotDailyCasesOverTime(datCases, logScale = FALSE)
-p
-p <- plotCurrentlySickPatients(datCases, logScale = FALSE)
-p
-p <- plotPositiveTestPc(datCases, lastDateCases, lastMaxPositiveCases)
-p
+plotTotalCasesOverTime(datCases, lastDateCases, lastMaxPositiveCases, logScale = TRUE)
 
-p <- plotCountyCasesOverTime(datCounty)
-p
-p <- plotCountyDeathsOverTime(datCountyDeaths)
-p
+plotDailyCasesOverTime(datCases, logScale = FALSE)
+plotCurrentlySickPatients(datCases, logScale = FALSE)
+plotPositiveTestPc(datCases, lastDateCases, lastMaxPositiveCases)
 
-p <- plotAgeGroupsCases(datAge)
-p
-p <- plotAgeGroupsDeaths(datAge)
-p
-p <- plotAgeGroupsSection(datAge)
-p
+plotCountyCasesOverTime(datCounty)
+plotCountyDeathsOverTime(datCountyDeaths)
 
-p <- plotGenderSection(datGender)
-p
+plotAgeGroupsCases(datAge)
+plotAgeGroupsDeaths(datAge)
+plotAgeGroupsSection(datAge)
 
-p <- plotRaceCasesOverTime(datRace)
-p
-p <- plotRaceSection(datRace)
-p
+plotGenderSection(datGender)
 
-p <- plotZipCasesOverTime(datZip, zip2highlight = 21215)
-p
+plotRaceCasesOverTime(datRace)
+plotRaceDeathsOverTime(datRace)
+plotRaceSection(datRace)
+
+plotZipCasesOverTime(datZip, zip2highlight = 20783)

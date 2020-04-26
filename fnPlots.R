@@ -1,5 +1,9 @@
 # All plot functions
 
+plotWidth= 12
+plotHeight = 7 # for single graph: 6 (= 2 times 3) + 1
+plotHeightLong = 10 # for multiple graphs: 9 (= 3 times 3) + 1
+
 #' Plot the trend in number of cases by totals over time
 #' needs data from cases2.txt
 plotTotalCasesOverTime <- function(dat, lastDateCases, lastMaxPositiveCases, logScale = TRUE) {
@@ -38,12 +42,12 @@ plotTotalCasesOverTime <- function(dat, lastDateCases, lastMaxPositiveCases, log
              x = as.Date(lastDateCases) - 6, y = lastMaxPositiveCases + 1000,
              size = 3, fontface = "italic")
   
-  ggsave("figures/MD-coronavirus-cases.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
+  ggsave("figures/MD-COVID19-cases.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
   return(p)
 }
 
-#' Plot the trends in number of DAILY cases over time
+#' Plot the trends in number of DAILY cases over time + percent positive/negative over time
 #' needs data from cases2.txt
 plotDailyCasesOverTime <- function(dat, logScale = FALSE) {
   
@@ -66,6 +70,9 @@ plotDailyCasesOverTime <- function(dat, logScale = FALSE) {
   dat <- dat %>%
     mutate(deltaReleased = Released - lag(Released, default = 0))
   
+  dat <- dat %>% mutate (pcNeg = deltaNegative / (deltaPositive + deltaNegative) * 100)
+  dat <- dat %>% mutate (pcPos = deltaPositive / (deltaPositive + deltaNegative) * 100)
+  
   cols2pivot <- colnames(dat)
   cols2pivot[2:10] <- c("TotalNegative", "TotalPositive", "TotalDeaths", "TotalPDeaths", "TotalHospitalizations", "TotalReleased", "XCurrentlyHospitalized", "XAcuteCare", "XIntensiveCare")
   cols2pivot[11:15] <- c("Negative", "Positive", "Deaths", "Probable Deaths", "Hospitalizations", "Released")
@@ -82,12 +89,40 @@ plotDailyCasesOverTime <- function(dat, logScale = FALSE) {
     geom_point(aes(color = Delta, shape = Delta)) +
     labs(title = "Daily variation of Coronavirus cases in Maryland, USA (2020)",
          x = "Date",
-         y = paste("Daily variation (# of cases)", logWarning),
+         y = paste("Daily variation (# of new cases)", logWarning)
+         )
+  
+  #ggsave("figures/MD-COVID19-cases-daily.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
+  
+  # Calculate and display the second graph
+  
+  cols2pivot <- colnames(dat)
+  cols2pivot[17:18] <- c("% negative", "% positive")
+  colnames(dat) <- cols2pivot
+  cols2pivot <- cols2pivot[c(17:18)]
+  
+  dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "Tests", values_to = "Percent") # don't drop NAs because Negative tests came back on 3/28
+  dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
+  
+  q <- ggplot(dt, aes(x = Date, y = Percent, group = Tests)) +
+    {if(logScale) scale_y_log10()} +
+    {if(logScale) annotation_logticks()} +
+    geom_area(aes(fill= Tests), position = 'stack') +
+    scale_fill_manual(values = c("#999999", "#E69F00")) +
+    labs(title = "Daily proportion of Coronavirus test results in Maryland, USA (2020)",
+         x = "Date",
+         y = paste("Daily percentage (% of total # of tests)", logWarning),
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
+
+  #ggsave("figures/MD-COVID19-tests-daily.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
-  ggsave("figures/MD-coronavirus-cases-daily.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
+  #multiplot(p, q, cols = 1)
+  r <- ggarrange(p, q, heights = c(1, 1), 
+                 ncol = 1, nrow = 2, align = "v")
   
-  return(p)
+  ggsave("figures/MD-COVID19-cases-daily.png", plot = r, device = "png", width = plotWidth, height = plotHeightLong, units = "in")
+  
+  return(r)
 }
 
 #' Plot the approximate trend in currently sick patients
@@ -124,7 +159,7 @@ plotCurrentlySickPatients <- function(dat, logScale = FALSE) {
          y = paste("# of patients hospitalized on each day", logWarning),
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
 
-  ggsave("figures/MD-coronavirus-cases-CSP.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
+  ggsave("figures/MD-COVID19-cases-CSP.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
   return(p)
 }
@@ -158,7 +193,7 @@ plotPositiveTestPc <- function(dat, lastDateCases, lastMaxPositiveCases) {
   q <- ggplot(datTT, aes(x = Date, y = PositivePC)) +
     geom_line(lwd = 1) +
     geom_point() +
-    labs(title = "Proportion of positive Coronavirus tests in Maryland, USA (2020)",
+    labs(title = "Proportion of cumulative positive Coronavirus tests in Maryland, USA (2020)",
          x = "Date",
          y = "Percentage of positive tests (%)",
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y"))) +
@@ -174,7 +209,7 @@ plotPositiveTestPc <- function(dat, lastDateCases, lastMaxPositiveCases) {
   r <- ggarrange(p, q, heights = c(1, 1), 
                  ncol = 1, nrow = 2, align = "v")
   
-  ggsave("figures/MD-coronavirus-total-tests.png", plot = r, device = "png", width = 3840/300, height = 2160/300, units = "in")
+  ggsave("figures/MD-COVID19-tests-total.png", plot = r, device = "png", width = plotWidth, height = plotHeightLong, units = "in")
   
   return(r)
 }
@@ -198,7 +233,7 @@ plotCountyCasesOverTime <- function(dat) {
          y = "Cases",
          caption = paste("DnA = Data not Available\nData from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
-  ggsave("figures/MD-coronavirus-counties.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
+  ggsave("figures/MD-COVID19-counties-cases.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
   return(p)
 }
@@ -222,7 +257,7 @@ plotCountyDeathsOverTime <- function(dat) {
          y = "Number of deaths",
          caption = paste("DnA = Data not Available\nData from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
-  ggsave("figures/MD-coronavirus-counties-deaths.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
+  ggsave("figures/MD-COVID19-counties-deaths.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
   return(p)
 }
@@ -241,7 +276,7 @@ plotAgeGroupsCases <- function(dat) {
          y = "Cases",
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
 
-  ggsave("figures/MD-coronavirus-byage.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
+  ggsave("figures/MD-COVID19-age-cases.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
   return(p)
 }
@@ -260,7 +295,7 @@ plotAgeGroupsDeaths <- function(dat) {
          y = "Total number of deaths",
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
-  ggsave("figures/MD-coronavirus-byage-deaths.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
+  ggsave("figures/MD-COVID19-age-deaths.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
   return(p)
 }
@@ -282,7 +317,7 @@ plotAgeGroupsSection <- function(dat) {
          y = "Number",
          caption = paste("DnA: Data not Available\nData from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
 
-  ggsave("figures/MD-coronavirus-byage-grp.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
+  ggsave("figures/MD-COVID19-age-grp.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
   return(p)
 }
@@ -308,7 +343,7 @@ plotGenderSection <- function(dat) {
          y = "Total count",
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
-  ggsave("figures/MD-coronavirus-bygender-grp.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
+  ggsave("figures/MD-COVID19-gender-grp.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
   return(p)
 }
@@ -337,7 +372,36 @@ plotRaceCasesOverTime <- function(dat) {
          y = "Cases",
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
-  ggsave("figures/MD-coronavirus-byrace.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
+  ggsave("figures/MD-COVID19-race-cases.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
+  
+  return(p)
+}
+
+#' Plot the trend in number of deaths by race over time
+#' needs data from byrace.txt
+plotRaceDeathsOverTime <- function(dat) {
+  
+  cols2keep <- c(1, 8:13)
+  dat <- dat[, cols2keep]
+  
+  cols2pivot <- colnames(dat)
+  cols2pivot <- c("Date", "African American", "Asian", "White", "Hispanic", "Other", "N.A.")
+  colnames(dat) <- cols2pivot
+  cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
+  
+  #cols2pivot <- colnames(dat)
+  dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "Races", values_to = "Deaths", values_drop_na = TRUE)
+  dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
+  
+  p <- ggplot(dt, aes(x = Date, y = Deaths, group = Races)) +
+    geom_line(aes(color = Races), lwd = 1) +
+    geom_point(aes(color = Races, shape = Races)) +
+    labs(title = "Evolution of Coronavirus deaths by race in Maryland, USA (2020)",
+         x = "Date",
+         y = "Number of deaths",
+         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
+  
+  ggsave("figures/MD-COVID19-race-deaths.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
   return(p)
 }
@@ -368,7 +432,7 @@ plotRaceSection <- function(dat) {
          y = "Cases",
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
-  ggsave("figures/MD-coronavirus-byrace-grp.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
+  ggsave("figures/MD-COVID19-race-grp.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
   return(p)
 }
@@ -387,9 +451,9 @@ plotZipCasesOverTime <- function(dat, zip2highlight = 21215) {
     labs(title = "Evolution of Coronavirus positive cases by zip codes in Maryland, USA (2020)",
          x = "Date",
          y = "Positive tests counts",
-         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
+         caption = paste("Note: data for ZIP codes with 7 or fewer cases are not present on the MDH dashboard (and hence nor here)\nData from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
   p
-  ggsave("figures/MD-coronavirus-byZip.png", plot = p, device = "png", width = 3840/300, height = 2160/300, units = "in")
+  ggsave("figures/MD-COVID19-zip-cases.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
   return(p)
 }
