@@ -77,7 +77,7 @@ plotDailyCasesOverTime <- function(dat, logScale = FALSE) {
   cols2pivot[2:10] <- c("TotalNegative", "TotalPositive", "TotalDeaths", "TotalPDeaths", "TotalHospitalizations", "TotalReleased", "XCurrentlyHospitalized", "XAcuteCare", "XIntensiveCare")
   cols2pivot[11:15] <- c("Negative", "Positive", "Deaths", "Probable Deaths", "Hospitalizations", "Released")
   colnames(dat) <- cols2pivot
-  cols2pivot <- cols2pivot[11:15] # we don't need "Date" - nor Negative
+  cols2pivot <- cols2pivot[12:15] # we don't need "Date" - nor Negative
   
   dt <- pivot_longer(data = dat, cols = cols2pivot, names_to = "Delta", values_to = "DailyVariation") # don't drop NAs because Negative tests came back on 3/28
   dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
