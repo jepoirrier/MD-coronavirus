@@ -84,6 +84,17 @@ MDRaceNCols <- 19
 # D...: number of deaths for that community
 datRace <- read.csv(MDRaceFile, sep = " ", colClasses = c(rep("numeric", MDRaceNCols)))
 
+# Read data for the "Congregate Facility Settings" (nursing home and similar)
+MDNursingFile <- 'MD-coronavirus-nursing.txt'
+MDNursingNCols <- 5
+# Space-delimited file with fields:
+# Date: date in YearMonthDate format
+# StaffCases: number of confirmed cases in staff
+# StaffDeaths: number of deaths in staff
+# ResidentCases: number of confirmed cases in residents
+# ResidentDeaths: number of deaths in residents
+datNursing <- read.csv(MDNursingFile, sep = " ", colClasses = c(rep("numeric", MDNursingNCols)))
+
 # Read data for ZIP cases
 MDZIPFile <- 'MD-corona-ZIP.txt'
 MDZIPNCols <- 3
@@ -95,6 +106,7 @@ plotTotalCasesOverTime(datCases, lastDateCases, lastMaxPositiveCases, logScale =
 plotDailyCasesOverTime(datCases, logScale = FALSE)
 plotCurrentlySickPatients(datCases, logScale = FALSE)
 plotPositiveTestPc(datCases, lastDateCases, lastMaxPositiveCases)
+plotNursingCasesOverTime(datNursing, logScale = TRUE)
 
 plotCountyCasesOverTime(datCounty)
 plotCountyDeathsOverTime(datCountyDeaths)
