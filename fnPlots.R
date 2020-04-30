@@ -247,6 +247,40 @@ plotNursingCasesOverTime <- function(dat, logScale = FALSE) {
   return(p)
 }
 
+#' Plot the latest cumulative % of case/deaths in Congregate Facility Settings vs. Total cases/deaths
+#' needs data from cases2.txt (-> dat1) and nursing.txt (-> dat2)
+plotPcNursingCases <- function(dat1, dat2) {
+  
+  dat2$NursingCases <- dat2$StaffCases + dat2$ResidentCases
+  dat2$NursingDeaths <- dat2$StaffDeaths + dat2$ResidentDeaths
+  
+  datCasesWNursing <- merge(dat1, dat2, by = "Date")
+  
+  datCasesWNursing$PCNursingCases <- datCasesWNursing$NursingCases / datCasesWNursing$Positive * 100
+  datCasesWNursing$PCNursingDeaths <- datCasesWNursing$NursingDeaths / datCasesWNursing$Deaths * 100
+  
+  datCasesWNursing <- tail(datCasesWNursing, n = 1)
+  datCasesWNursing <- subset(datCasesWNursing, select = c("Date", "PCNursingCases", "PCNursingDeaths"))
+  datCasesWNursing$Date <- as.Date(sprintf("%d",datCasesWNursing$Date), "%y%m%d")
+  
+  cols2pivot <- colnames(datCasesWNursing)
+  cols2pivot <- c("Date", "Nursing cases", "Nursing deaths")
+  colnames(datCasesWNursing) <- cols2pivot
+  cols2pivot <- cols2pivot[2:3] # we don't need "Date"
+  dt <- pivot_longer(data = datCasesWNursing, cols = cols2pivot, names_to = "Type", values_to = "Percentage")
+  
+  p <- ggplot(dt, aes(x = Type, y = Percentage)) +
+    geom_bar(stat = "identity", position = position_dodge()) +
+    geom_text(aes(label=format(round(Percentage,2), scientific = FALSE, big.mark = ",")), vjust=1.6, color="white", size=3.5) +
+    labs(title = "Latest cumulative proportions in nursing home due to Coronavirus in Maryland, USA (2020)",
+         x = " ",
+         y = paste("Percentage in nursing home (compared to total in MD)"),
+         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
+  
+  ggsave("figures/MD-COVID19-bursing-pc.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
+  
+}
+
 #' Plot the trend in number of cases in counties over time
 #' needs data from counties.txt
 plotCountyCasesOverTime <- function(dat) {
@@ -326,7 +360,7 @@ plotAgeGroupsDeaths <- function(dat) {
     labs(title = "Evolution of Coronavirus deaths by age group in Maryland, USA (2020)",
          x = "Date",
          y = "Cumulative number of deaths",
-         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
+         caption = paste("DnA = Data not Available\nData from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
   ggsave("figures/MD-COVID19-age-deaths.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
