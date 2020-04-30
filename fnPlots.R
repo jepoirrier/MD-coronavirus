@@ -125,9 +125,50 @@ plotDailyCasesOverTime <- function(dat, logScale = FALSE) {
   return(r)
 }
 
+#' Plot the trends in number of DAILY number of tests over time + percent positive/negative over time
+#' needs data from cases2.txt
+plotDailyTestsOverTime <- function(dat) {
+ 
+  # compute delta per day
+  dat <- dat %>% mutate(deltaNegative = Negative - lag(Negative, default = 0))
+  dat <- dat %>% mutate(deltaPositive = Positive - lag(Positive, default = 0))
+  dat <- dat %>% mutate(deltaTotal = deltaPositive + deltaNegative)
+  dat <- dat %>% mutate(pcPos = deltaPositive / deltaTotal * 100)
+  
+  dt <- subset(dat, select = c("Date", "deltaTotal", "pcPos")) # we just need those
+  colsName <- colnames(dt)
+  colsName <- c("Date", "NewTests", "DailyPositive")
+  colnames(dt) <- colsName
+  
+  dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
+  
+  p <- ggplot(dt, aes(x = Date, y = NewTests)) +
+    geom_line() +
+    labs(title = "Daily number of Coronavirus tests reported in Maryland, USA (2020)",
+         x = "Date",
+         y = paste("Daily number of tests")
+    )
+
+  # Calculate and display the second graph
+  
+  q <- ggplot(dt, aes(x = Date, y = DailyPositive)) +
+    geom_line() +
+    labs(title = "Daily percentage of positive Coronavirus tests reported",
+         x = "Date",
+         y = paste("Daily % of positive tests"),
+         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y"))
+    )
+
+  #multiplot(p, q, cols = 1)
+  r <- ggarrange(p, q, heights = c(1, 1), 
+                 ncol = 1, nrow = 2, align = "v")
+  
+  ggsave("figures/MD-COVID19-tests-daily.png", plot = r, device = "png", width = plotWidth, height = plotHeightLong, units = "in")
+  
+  return(r)
+}
+
 #' Plot the approximate trend in currently sick patients
-#' This is calculated by removing "released" patients from "hospitalized" patients
-#' (only an approximation because of lag, data not available since the beginning, etc.)
 #' needs data from cases2.txt as of April 21, 2020
 plotCurrentlySickPatients <- function(dat, logScale = FALSE) {
   
@@ -277,7 +318,7 @@ plotPcNursingCases <- function(dat1, dat2) {
          y = paste("Percentage in nursing home (compared to total in MD)"),
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
-  ggsave("figures/MD-COVID19-bursing-pc.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
+  ggsave("figures/MD-COVID19-nursing-pc.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
 }
 
