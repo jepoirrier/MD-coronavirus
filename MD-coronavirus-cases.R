@@ -104,7 +104,9 @@ datZip <- read.csv(MDZIPFile, sep = " ", colClasses = c(rep("numeric", MDZIPNCol
 plotTotalCasesOverTime(datCases, lastDateCases, lastMaxPositiveCases, logScale = TRUE)
 
 plotDailyCasesOverTime(datCases, logScale = FALSE)
+plotDailyTestsOverTime(datCases)
 plotCurrentlySickPatients(datCases, logScale = FALSE)
+plotNewSickPatients(datCases)
 plotPositiveTestPc(datCases, lastDateCases, lastMaxPositiveCases)
 plotNursingCasesOverTime(datNursing, logScale = TRUE)
 plotPcNursingCases(datCases, datNursing)

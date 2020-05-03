@@ -168,7 +168,7 @@ plotDailyTestsOverTime <- function(dat) {
   return(r)
 }
 
-#' Plot the approximate trend in currently sick patients
+#' Plot the trend in currently hospitalized patients
 #' needs data from cases2.txt as of April 21, 2020
 plotCurrentlySickPatients <- function(dat, logScale = FALSE) {
   
@@ -201,6 +201,37 @@ plotCurrentlySickPatients <- function(dat, logScale = FALSE) {
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
 
   ggsave("figures/MD-COVID19-cases-CSP.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
+  
+  return(p)
+}
+
+#' Plot the new dayly hospitalized patients
+#' needs data from cases2.txt as of April 21, 2020
+plotNewSickPatients <- function(dat) {
+  
+  dt <- subset(dat, select = c("Date", "CurrentlyHospitalized", "AcuteCare", "IntensiveCare")) # we just need those
+  
+  dt <- dt %>% mutate(dailyHospitalized = CurrentlyHospitalized - lag(CurrentlyHospitalized, default = 0))
+  dt <- dt %>% mutate(dailyAcuteCare = AcuteCare - lag(AcuteCare, default = 0))
+  dt <- dt %>% mutate(dailyIntensiveCare = IntensiveCare - lag(IntensiveCare, default = 0))
+
+  cols2pivot <- colnames(dt)
+  cols2pivot <- c("Date", "TotalHospit", "TotalAcuteCare", "TotalICU", "Total Hospit.", "Acute Care", "ICU")
+  colnames(dt) <- cols2pivot
+  cols2pivot <- cols2pivot[5:7] # we don't need "Date"
+  dt$Date <- as.Date(sprintf("%d",dat$Date), "%y%m%d")
+  
+  dt <- pivot_longer(data = dt, cols = cols2pivot, names_to = "Type", values_to = "Daily")
+  
+  p <- ggplot(dt, aes(x = Date, y = Daily, group = Type)) +
+    geom_line(aes(color = Type), lwd = 1) +
+    geom_point(aes(color = Type, shape = Type)) +
+    labs(title = "Daily number of new patients in hospitalization due to Coronavirus in Maryland, USA (2020)",
+         x = "Date",
+         y = "# of new patients hospitalized on each day",
+         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org ; last update:", format(Sys.Date(), "%b %d, %Y")))
+  
+  ggsave("figures/MD-COVID19-cases-CSPDaily.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
   return(p)
 }
