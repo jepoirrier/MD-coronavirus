@@ -231,7 +231,7 @@ plotNewSickPatients <- function(dat) {
     labs(title = "Daily number of new patients in hospitalization due to Coronavirus in Maryland, USA (2020)",
          x = "Date",
          y = "# of new patients hospitalized on each day",
-         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
+         caption = paste("Negative values: more patients were discharged than admitted on that day\nData from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
   ggsave("figures/MD-COVID19-cases-CSPDaily.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
@@ -284,6 +284,55 @@ plotPositiveTestPc <- function(dat, lastDateCases, lastMaxPositiveCases) {
                  ncol = 1, nrow = 2, align = "v")
   
   ggsave("figures/MD-COVID19-tests-total.png", plot = r, device = "png", width = plotWidth, height = plotHeightLong, units = "in")
+  
+  return(r)
+}
+
+plotDeathsOverTime <- function(dat) {
+  dt <- subset(dat, select = c("Date", "Deaths"))
+  dt <- dt %>% mutate(dailyDeaths = Deaths - lag(Deaths, default = 0))
+  dt$Date <- as.Date(sprintf("%d", dt$Date), "%y%m%d")
+  
+  lastCumulativeDeathsN <- dt$Deaths[length(dt[,2])]
+  lastCumulativeDeathsDate <- max(dt$Date, na.rm = TRUE)
+  peakDeathsN <- max(dt$dailyDeaths, na.rm = TRUE)
+  peakDeathsDate <- tail(dt$Date[dt$dailyDeaths == peakDeathsN], 1)
+  
+  p <- ggplot(dt, aes(x = Date, y = Deaths)) +
+    geom_line(lwd = 1) +
+    geom_point() +
+    labs(title = "Cumulative number of Coronavirus deaths reported in Maryland, USA (2020)",
+         x = " ",
+         y = "Cumulative number of deaths") +
+    # manually place the arrow and label highlighting the last data
+    annotate("segment", x = as.Date(lastCumulativeDeathsDate) - 3.5, y = lastCumulativeDeathsN,
+             xend = as.Date(lastCumulativeDeathsDate) - 2, yend = lastCumulativeDeathsN,
+             size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+    annotate("text", label = paste("Last total number\nof deaths:", format(lastCumulativeDeathsN, scientific = FALSE, big.mark = ",")),
+             x = as.Date(lastCumulativeDeathsDate) - 9, y = lastCumulativeDeathsN + 5,
+             size = 3, fontface = "italic")
+  
+  q <- ggplot(dt, aes(x = Date, y = dailyDeaths)) +
+    geom_line(lwd = 1) +
+    geom_point() +
+    geom_smooth() +
+    labs(title = "Daily new Coronavirus deaths reported in Maryland, USA (2020)",
+         x = "Date",
+         y = "Daily new deaths",
+         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y"))) +
+    # manually place the arrow and label highlighting the last data
+    annotate("segment", x = as.Date(peakDeathsDate) - 3.5, y = peakDeathsN,
+             xend = as.Date(peakDeathsDate) - 2, yend = peakDeathsN,
+             size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+    annotate("text", label = paste("Maximum of daily # deaths:", sprintf("%.0f", peakDeathsN)),
+             x = as.Date(peakDeathsDate) - 12, y = peakDeathsN,
+             size = 3, fontface = "italic")
+  
+  #multiplot(p, q, cols = 1)
+  r <- ggarrange(p, q, heights = c(1, 1), 
+                 ncol = 1, nrow = 2, align = "v")
+  
+  ggsave("figures/MD-COVID19-deaths.png", plot = r, device = "png", width = plotWidth, height = plotHeightLong, units = "in")
   
   return(r)
 }
