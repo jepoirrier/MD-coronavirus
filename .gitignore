@@ -37,3 +37,9 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# MacOS Files
+.DS_Store
+
+# Project-specific Directory not to Update
+ZIP-daily-copies/
