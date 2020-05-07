@@ -12,12 +12,11 @@ Created on Tue Apr 14 21:36:28 2020
 
 # TODO CHANGE -- 1 --- DATE
 
-
 import os
 
-currentDate = '200506'
+currentDate = '200507'
 
-os.chdir('/Users/jepoirrier/Documents/software/MD-coronavirus-cases')
+os.chdir('/Users/jepoirrier/Documents/software/MD-coronavirus') # Adapt to your needs
 
 inputFileName = 'MD-corona-ZIPpasted' + currentDate + '.txt'
 outputFileName = 'MD-corona-ZIP.txt'
