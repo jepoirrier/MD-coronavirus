@@ -1,0 +1,8 @@
+TotalPopProj.xlsx
+
+Population projection from the Maryland State Data Center, Department of Planning
+Projection from 2017 (August)
+URL: https://planning.maryland.gov/MSDC/Pages/s3_projection.aspx
+Accessed: May 11, 2020
+
+Data for 2020 only: copied and stored in TotalPopProj.dat
