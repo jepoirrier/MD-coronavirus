@@ -30,10 +30,10 @@ datCountyPop <- read.csv(MDCountiesPopFile, sep = " ", colClasses = c(rep("numer
 
 # Get also the # cases per 100,00 for the whole US
 # Source: https://ourworldindata.org/grapher/total-confirmed-cases-of-covid-19-per-million-people?tab=chart&country=USA (couldn't find on CDC website?)
-cphtUS <- 4017.49 / 10 # accessed May 11, 2020 - it's per million --> / 10 to per 100,000
+cphtUS <- 4072.22 / 10 # accessed May 12 2020 - it's per million --> / 10 to per 100,000
 # Get also the # cases per 100,00 for the whole US
 # Source: https://www.cdc.gov/covid-data-tracker/index.html
-cphtMD <- 552.3 # accessed May 11, 2020
+cphtMD <- 552.3 # accessed May 12, 2020
 
 matC <- as.matrix(datCounty) # transform to matrix for processing
 matP <- as.matrix(datCountyPop)
@@ -69,18 +69,24 @@ dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
 q <- ggplot(dt, aes(x = Date, y = Tests, group = County)) +
   geom_line(aes(color = County), lwd = 1) +
   geom_point(aes(color = County, shape = County)) +
-  geom_hline(yintercept = cphtUS, linetype = "dashed", color = "black") +
+  #geom_hline(yintercept = cphtUS, linetype = "dashed", color = "black") + # complete horiz line is wrong because induce constant level since time on x-axis
+  annotate("segment", x = as.Date(as.Date(sprintf("%d", max(datX$Date)), "%y%m%d")) - 5, y = cphtUS,
+           xend = as.Date(as.Date(sprintf("%d", max(datX$Date)), "%y%m%d")), yend = cphtUS,
+           size = 0.5) +
   annotate("text", label = paste("USA:", format(cphtUS, scientific = FALSE, big.mark = ",")),
-           x = as.Date(as.Date(sprintf("%d", min(datX$Date)), "%y%m%d")) + 5, y = cphtUS + 20,
+           x = as.Date(as.Date(sprintf("%d", max(datX$Date)), "%y%m%d")) - 5, y = cphtUS + 20,
            size = 3, fontface = "italic") +
-  geom_hline(yintercept = cphtMD, color = "black") +
+  #geom_hline(yintercept = cphtMD, color = "black") + # complete horiz line is wrong because induce constant level since time on x-axis
+  annotate("segment", x = as.Date(as.Date(sprintf("%d", max(datX$Date)), "%y%m%d")) - 5, y = cphtMD,
+           xend = as.Date(as.Date(sprintf("%d", max(datX$Date)), "%y%m%d")), yend = cphtMD,
+           size = 0.5) +
   annotate("text", label = paste("MD:", format(cphtMD, scientific = FALSE, big.mark = ",")),
-           x = as.Date(as.Date(sprintf("%d", min(datX$Date)), "%y%m%d")) + 5, y = cphtMD + 20,
+           x = as.Date(as.Date(sprintf("%d", max(datX$Date)), "%y%m%d")) - 5, y = cphtMD + 20,
            size = 3, fontface = "italic") +
   #gghighlight(County == "Charles") +
   labs(x = "Date",
        y = "Cumulative cases / 100,000 pop",
-       caption = paste("DnA = Data not Available ; US data: OurWorldInData.org ; MD average: CDC (both May 11, 2020)\nCOVID-19 data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
+       caption = paste("DnA = Data not Available ; US data: OurWorldInData.org ; MD average: CDC (both May 12, 2020)\nCOVID-19 data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
 
 r <- ggarrange(p, q, heights = c(1, 1), 
                ncol = 1, nrow = 2, align = "v")
