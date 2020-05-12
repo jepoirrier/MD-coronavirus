@@ -1,7 +1,8 @@
-# Produce a simple graph of Coronavirus cases in Maryland State (USA) since the 1st cases detected
+# Produce graphs of Coronavirus cases in Maryland State (USA) since the 1st cases detected
 # Source of data: https://coronavirus.maryland.gov/ (updated daily at ~ 10am)
-# Rationale for doing this: no history of past cases and removal of some data (see below)
-# Explanations: https://jepoirrier.org (maybe search for "coronavirus")
+# Not yet explored official data repository: https://data.imap.maryland.gov/search?q=COVID-19 (since ~ May 2020)
+# Rationale for doing this: no history of past cases and removal of some data (see below) + have fun
+# Explanations: https://jepoirrier.org/mdcovid19/
 # Data repository: https://github.com/jepoirrier/MD-coronavirus
 
 library(dplyr)
