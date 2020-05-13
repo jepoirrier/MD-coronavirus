@@ -73,6 +73,9 @@ plotDailyCasesOverTime <- function(dat, logScale = FALSE) {
   dat <- dat %>% mutate (pcNeg = deltaNegative / (deltaPositive + deltaNegative) * 100)
   dat <- dat %>% mutate (pcPos = deltaPositive / (deltaPositive + deltaNegative) * 100)
   
+  lastDateCases <- as.Date(sprintf("%d", max(dat$Date, na.rm = TRUE)), "%y%m%d")
+  lastPositivePC <- dat$pcPos[nrow(dat)]
+  
   cols2pivot <- colnames(dat)
   cols2pivot[2:10] <- c("TotalNegative", "TotalPositive", "TotalDeaths", "TotalPDeaths", "TotalHospitalizations", "TotalReleased", "XCurrentlyHospitalized", "XAcuteCare", "XIntensiveCare")
   cols2pivot[11:15] <- c("Negative", "Positive", "Deaths", "Probable Deaths", "Hospitalizations", "Released")
@@ -109,11 +112,18 @@ plotDailyCasesOverTime <- function(dat, logScale = FALSE) {
     {if(logScale) annotation_logticks()} +
     geom_area(aes(fill= Tests), position = 'stack') +
     scale_fill_manual(values = c("#999999", "#E69F00")) +
+    # manually place the arrow and label highlighting the last data
+    annotate("segment", x = as.Date(lastDateCases) - 3.5, y = 40,
+             xend = as.Date(lastDateCases), yend = lastPositivePC + 2,
+             size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+    annotate("text", label = paste("Last percentage of\npositive tests:", sprintf("%.2f%%", lastPositivePC)),
+             x = as.Date(lastDateCases) - 6.5, y = 50,
+             size = 3, fontface = "italic") +
     labs(title = "Daily proportion of Coronavirus test results in Maryland, USA (2020)",
          x = "Date",
          y = paste("Daily percentage (% of total # of tests)", logWarning),
          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
-
+  
   #ggsave("figures/MD-COVID19-tests-daily.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
   #multiplot(p, q, cols = 1)
