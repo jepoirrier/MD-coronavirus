@@ -30,10 +30,10 @@ datCountyPop <- read.csv(MDCountiesPopFile, sep = " ", colClasses = c(rep("numer
 
 # Get also the # cases per 100,00 for the whole US
 # Source: https://ourworldindata.org/grapher/total-confirmed-cases-of-covid-19-per-million-people?tab=chart&country=USA (couldn't find on CDC website?)
-cphtUS <- 4072.22 / 10 # accessed May 12 2020 - it's per million --> / 10 to per 100,000
+cphtUS <- 4138.83 / 10 # accessed May 13 2020 - it's per million --> / 10 to per 100,000
 # Get also the # cases per 100,00 for the whole US
 # Source: https://www.cdc.gov/covid-data-tracker/index.html
-cphtMD <- 552.3 # accessed May 12, 2020
+cphtMD <- 563.7 # accessed May 13, 2020
 
 matC <- as.matrix(datCounty) # transform to matrix for processing
 matP <- as.matrix(datCountyPop)
