@@ -14,7 +14,7 @@ Created on Tue Apr 14 21:36:28 2020
 
 import os
 
-currentDate = '200513'
+currentDate = '200514'
 
 os.chdir('/Users/jepoirrier/Documents/software/MD-coronavirus') # Adapt to your needs
 
