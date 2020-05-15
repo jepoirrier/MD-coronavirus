@@ -14,11 +14,11 @@ Created on Tue Apr 14 21:36:28 2020
 
 import os
 
-currentDate = '200514'
+currentDate = '200515'
 
 os.chdir('/Users/jepoirrier/Documents/software/MD-coronavirus') # Adapt to your needs
 
-inputFileName = 'MD-corona-ZIPpasted' + currentDate + '.txt'
+inputFileName = 'ZIP-daily-copies/MD-corona-ZIPpasted' + currentDate + '.txt'
 outputFileName = 'MD-corona-ZIP.txt'
 
 inputFile = open(inputFileName, mode = "r")
