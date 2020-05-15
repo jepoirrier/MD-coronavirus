@@ -8,12 +8,17 @@ library(dplyr)
 library(gghighlight)
 library(ggplot2)
 library(ggpubr)
+library(ini)
 library(tidyr)
 #library(viridis)
 
 plotWidth <- 12
 plotHeight <- 7 # for single graph: 6 (= 2 times 3) + 1
 plotHeightLong <- 10 # for multiple graphs: 9 (= 3 times 3) + 1
+
+# Read an .ini file with point data in it
+iniFile <- "pointData.ini"
+pointData <- read.ini(iniFile)
 
 # Read the data from the counties
 MDCountiesFile <- 'MD-coronavirus-counties.txt'
@@ -29,12 +34,10 @@ MDCountiesPopNCols <- 26
 datCountyPop <- read.csv(MDCountiesPopFile, sep = " ", colClasses = c(rep("numeric", MDCountiesPopNCols)))
 
 # Get also the # cases per 100,00 for the whole US
-# Source: https://ourworldindata.org/grapher/total-confirmed-cases-of-covid-19-per-million-people?tab=chart&country=USA (couldn't find on CDC website?)
-cphtUS <- 4283.62 / 10 # it's per million --> / 10 to per 100,000
+cphtUS <- as.double(pointData$CasesPer100000USA) / 10 # it's per million --> / 10 to per 100,000
 # Get also the # cases per 100,00 for the whole US
-# Source: https://www.cdc.gov/covid-data-tracker/index.html
-cphtMD <- 594.2
-dateOutsideDataUpdate <- "May 15, 2020" # BOTH should be updated
+cphtMD <- as.double(pointData$CasesPer100000MD)
+dateOutsideDataUpdate <- pointData$Update$Date # BOTH should be updated -> change if different date
 
 matC <- as.matrix(datCounty) # transform to matrix for processing
 matP <- as.matrix(datCountyPop)
