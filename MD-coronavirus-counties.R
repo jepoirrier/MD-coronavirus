@@ -17,7 +17,7 @@ plotHeight <- 7 # for single graph: 6 (= 2 times 3) + 1
 plotHeightLong <- 10 # for multiple graphs: 9 (= 3 times 3) + 1
 
 # Read an .ini file with point data in it
-iniFile <- "pointData.ini"
+iniFile <- "data-other-sources/pointData.ini"
 pointData <- read.ini(iniFile)
 
 # Read the data from the counties
