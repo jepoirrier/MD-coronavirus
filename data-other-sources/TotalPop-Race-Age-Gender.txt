@@ -1,0 +1,12 @@
+TotalPop-Race-Age-Gender.xlsx
+
+Population projection from the Maryland State Data Center, Department of Planning
+Projection from 2017 (August)
+URL: https://planning.maryland.gov/MSDC/Pages/s3_projection.aspx
+Accessed: May 15, 2020
+
+Data for 2020 only (highlighted in the xlsx):
+- Total population: copied and stored in pointData.ini
+- Total Males: copied and stored in pointData.ini
+- Total Females: copied and stored in pointData.ini
+- Total by age groups: copied and stored in TotalPop-Age.dat
