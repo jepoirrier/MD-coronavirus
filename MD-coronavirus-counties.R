@@ -34,10 +34,10 @@ MDCountiesPopNCols <- 26
 datCountyPop <- read.csv(MDCountiesPopFile, sep = " ", colClasses = c(rep("numeric", MDCountiesPopNCols)))
 
 # Get also the # cases per 100,00 for the whole US
-cphtUS <- as.double(pointData$CasesPer100000USA) / 10 # it's per million --> / 10 to per 100,000
+cphtUS <- as.double(pointData$CasesPer100000USA$Value) / 10 # it's per million --> / 10 to per 100,000
 # Get also the # cases per 100,00 for the whole US
-cphtMD <- as.double(pointData$CasesPer100000MD)
-dateOutsideDataUpdate <- pointData$Update$Date # BOTH should be updated -> change if different date
+cphtMD <- as.double(pointData$CasesPer100000MD$Value)
+dateOtherDataUpdate <- pointData$CasesPer100000MD$DateUpdated # BOTH should be updated -> change if different date
 
 matC <- as.matrix(datCounty) # transform to matrix for processing
 matP <- as.matrix(datCountyPop)
@@ -91,7 +91,7 @@ q <- ggplot(dt, aes(x = Date, y = Tests, group = County)) +
   theme_linedraw() +
   labs(x = "Date",
        y = "Cumulative cases / 100,000 pop",
-       caption = paste("DnA = Data not Available ; US data: OurWorldInData.org ; MD average: CDC (both", dateOutsideDataUpdate, ")\nCOVID-19 data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
+       caption = paste("DnA = Data not Available ; US data: OurWorldInData.org ; MD average: CDC (both", dateOtherDataUpdate, ")\nCOVID-19 data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
 
 r <- ggarrange(p, q, heights = c(1, 1), 
                ncol = 1, nrow = 2, align = "v")
