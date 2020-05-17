@@ -1,4 +1,4 @@
-# Produce graphs of Coronavirus cases in Maryland State (USA) - reported by other metrics
+# Produce graphs of Coronavirus cases in Maryland Counties (USA) - reported by other metrics
 # Source of data: https://coronavirus.maryland.gov/ (updated daily at ~ 10am)
 # Rationale for doing this: have some fun
 # Explanations: https://jepoirrier.org/mdcovid19/ 
@@ -91,7 +91,7 @@ q <- ggplot(dt, aes(x = Date, y = Tests, group = County)) +
   annotate("text", label = paste("MD:", format(cphtMD, scientific = FALSE, big.mark = ",")),
            x = as.Date(as.Date(sprintf("%d", max(datX$Date)), "%y%m%d")) - 5, y = cphtMD + 20,
            size = 3, fontface = "italic") +
-  labs(title = "Evolution of COVID-19 confirmed cases in Maryland counties, USA (2020)",
+  labs(title = "Evolution of COVID-19 confirmed cases per pop. in Maryland counties, USA (2020)",
        x = "Date",
        y = "Cumulative cases / 100,000 pop",
        caption = paste("DnA = Data not Available ; US data: OurWorldInData.org ; MD average: CDC (both", dateOtherDataUpdate, ")\nCOVID-19 data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
