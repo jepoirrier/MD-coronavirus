@@ -155,7 +155,7 @@ q <- ggplot(dt, aes(x = Date, y = Deaths, group = County)) +
   #gghighlight(County == "Charles") +
   labs(title = "Evolution of COVID-19-specific death rate, USA (2020)",
        x = "Date",
-       y = "Cumulative number of deaths / 100,000 pop",
+       y = "COVID-19-specific death rate (# deaths / 100,000 pop)",
        caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
 
 r <- ggarrange(p, q, heights = c(1, 1), 
