@@ -76,6 +76,7 @@ dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
 q <- ggplot(dt, aes(x = Date, y = Tests, group = County)) +
   geom_line(aes(color = County), lwd = 1) +
   geom_point(aes(color = County, shape = County)) +
+  theme_linedraw() +
   #geom_hline(yintercept = cphtUS, linetype = "dashed", color = "black") + # complete horiz line is wrong because induce constant level since time on x-axis
   annotate("segment", x = as.Date(as.Date(sprintf("%d", max(datX$Date)), "%y%m%d")) - 5, y = cphtUS,
            xend = as.Date(as.Date(sprintf("%d", max(datX$Date)), "%y%m%d")), yend = cphtUS,
@@ -90,7 +91,6 @@ q <- ggplot(dt, aes(x = Date, y = Tests, group = County)) +
   annotate("text", label = paste("MD:", format(cphtMD, scientific = FALSE, big.mark = ",")),
            x = as.Date(as.Date(sprintf("%d", max(datX$Date)), "%y%m%d")) - 5, y = cphtMD + 20,
            size = 3, fontface = "italic") +
-  theme_linedraw() +
   labs(title = "Evolution of COVID-19 confirmed cases in Maryland counties, USA (2020)",
        x = "Date",
        y = "Cumulative cases / 100,000 pop",
@@ -155,7 +155,7 @@ q <- ggplot(dt, aes(x = Date, y = Deaths, group = County)) +
   #gghighlight(County == "Charles") +
   labs(title = "Evolution of COVID-19-specific death rate, USA (2020)",
        x = "Date",
-       y = "COVID-19-specific death rate (# deaths / 100,000 pop)",
+       y = "COVID-19-specific death rate\n(# deaths / 100,000 pop)",
        caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
 
 r <- ggarrange(p, q, heights = c(1, 1), 
