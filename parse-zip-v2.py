@@ -14,7 +14,7 @@ Created on Tue Apr 14 21:36:28 2020
 
 import os
 
-currentDate = '200516'
+currentDate = '200517' # I don't want to fetch today's date in case I miss a day
 
 os.chdir('/Users/jepoirrier/Documents/software/MD-coronavirus') # Adapt to your needs
 
