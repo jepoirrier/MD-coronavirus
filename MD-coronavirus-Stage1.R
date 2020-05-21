@@ -90,7 +90,7 @@ colnames(datA) <- countiesList[1:length(datA)]
 # create datB = since May 14, 100% = data on that day (Note: use <- dat if not SMA)
 datB <- datA
 datB$Date <- as.Date(sprintf("%d",datB$Date), "%y%m%d")
-datB <- datB[datB$Date >= as.Date("200514", "%y%m%d"), ]
+datB <- datB[datB$Date >= as.Date("200515", "%y%m%d"), ]
 
 # Find daily variation (I'm sure there is a faster way)
 datB <- datB %>%
@@ -153,10 +153,16 @@ dt <- merge(dt,datStage1, by = "County")
 q <- ggplot(dt, aes(x = Date, y = Cases, group = County)) +
   geom_line(aes(color = Status), lwd = 1) +
   theme_linedraw() +
-  labs(title = "Cases relative to 1st day of Stage 1 (May 14, 2020)",
+  labs(title = "Cases relative to 1st day of Stage 1 (May 15, 2020)",
        x = "Date",
        y = "% variation (100% = daily # cases on May 14, 2020)",
-       caption = paste("Explanations at https://jepoirrier.org/mdcovid19/; COVID-19 data from https://coronavirus.maryland.gov/; last update:", format(Sys.Date(), "%b %d, %Y")))
+       caption = paste("Explanations at https://jepoirrier.org/mdcovid19/; COVID-19 data from https://coronavirus.maryland.gov/; last update:", format(Sys.Date(), "%b %d, %Y"))) +
+  annotate("segment", x = as.Date("200519", "%y%m%d"), y = 10,
+           xend = as.Date("200519", "%y%m%d"), yend = 0,
+           size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+  annotate("text", label = "Testing broadening\nMay 19, 2020",
+           x = as.Date("200519", "%y%m%d"), y = 22,
+           size = 4, fontface = "italic")
 
 r <- ggarrange(p, q, heights = c(1, 1), 
                ncol = 1, nrow = 2)
