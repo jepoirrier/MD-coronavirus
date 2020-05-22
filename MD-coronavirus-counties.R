@@ -1,4 +1,4 @@
-# Produce graphs of Coronavirus cases in Maryland Counties (USA) - reported by other metrics
+# Produce graphs of Coronavirus cases in Maryland Counties (USA) - relative for Counties
 # Source of data: https://coronavirus.maryland.gov/ (updated daily at ~ 10am)
 # Rationale for doing this: have some fun
 # Explanations: https://jepoirrier.org/mdcovid19/ 
