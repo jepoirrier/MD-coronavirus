@@ -151,7 +151,8 @@ dt <- pivot_longer(data = datB, cols = cols2pivot, names_to = "County", values_t
 dt <- merge(dt,datStage1, by = "County")
 
 q <- ggplot(dt, aes(x = Date, y = Cases, group = County)) +
-  geom_line(aes(color = Status), lwd = 1) +
+  geom_line(aes(color = Status)) +
+  scale_color_manual(values=c("#e10304", "#0db104", "#9eb4cc")) +
   theme_linedraw() +
   labs(title = "Cases relative to 1st day of Stage 1 (May 15, 2020)",
        x = "Date",
