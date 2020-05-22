@@ -156,7 +156,7 @@ q <- ggplot(dt, aes(x = Date, y = Cases, group = County)) +
   theme_linedraw() +
   labs(title = "Cases relative to 1st day of Stage 1 (May 15, 2020)",
        x = "Date",
-       y = "% variation (100% = daily # cases on May 14, 2020)",
+       y = "% variation (100% = daily # cases on May 15, 2020)",
        caption = paste("Explanations at https://jepoirrier.org/mdcovid19/; COVID-19 data from https://coronavirus.maryland.gov/; last update:", format(Sys.Date(), "%b %d, %Y"))) +
   annotate("segment", x = as.Date("200519", "%y%m%d"), y = 10,
            xend = as.Date("200519", "%y%m%d"), yend = 0,
