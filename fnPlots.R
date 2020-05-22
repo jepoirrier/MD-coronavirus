@@ -665,7 +665,8 @@ plotZipCasesOverTime <- function(dat, zip2highlight = 21215) {
   
   p <- ggplot(dat, aes(x = Date, y = Cases, group = ZipCode)) +
     geom_line(aes(color = ZipCode)) +
-    gghighlight(ZipCode == zip2highlight) +
+    #gghighlight(ZipCode == zip2highlight) +
+    gghighlight(Cases > 1000, label_key = ZipCode) +
     theme_linedraw() +
     theme(legend.position = "none") +
     labs(title = "Evolution of Coronavirus positive cases by zip codes in Maryland, USA (2020)",
