@@ -50,6 +50,8 @@ datStage1 <- read.csv(MDCountiesStage1File, sep = " ", colClasses = c("character
 countiesList <- colnames(datCounty)
 counties2remove <- countiesList[-c(1)] # we'll keep date and remove all counties (incl. DnA) - to keep the delta ("D") cols
 
+# TODO relative to county population
+
 # Find daily variation (I'm sure there is a faster way)
 datCounty <- datCounty %>%
   mutate(DAllegany = Allegany - lag(Allegany, default = 0)) %>%
@@ -87,7 +89,7 @@ matA <- apply(dat[,2:length(dat)], 2, SMA, n=7)
 datA <- cbind(dat$Date, as.data.frame(matA)) # get back to dataframe
 colnames(datA) <- countiesList[1:length(datA)]
 
-# create datB = since May 14, 100% = data on that day (Note: use <- dat if not SMA)
+# create datB = since May 15, 100% = data on that day (Note: use <- dat if not SMA)
 datB <- datA
 datB$Date <- as.Date(sprintf("%d",datB$Date), "%y%m%d")
 datB <- datB[datB$Date >= as.Date("200515", "%y%m%d"), ]
@@ -124,6 +126,7 @@ datB <- datB[ , -which(names(datB) %in% counties2remove)]
 colnames(datB) <- countiesList[1:length(datB)]
 
 
+
 # Now let's plot this! 
 
 # Plot 1 = crude daily variation by county
@@ -148,11 +151,65 @@ cols2pivot <- colnames(datB)
 cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
 
 dt <- pivot_longer(data = datB, cols = cols2pivot, names_to = "County", values_to = "Cases", values_drop_na = TRUE)
-dt <- merge(dt,datStage1, by = "County")
+
+# Add group of Phase 1 the county is in
+dt <- merge(dt, datStage1, by = "County")
+
+# Summarize by simple mead by group
+dtS <- dt %>%
+  group_by(Date, Status) %>%
+  summarise(
+    mean = mean(Cases),
+    sd = sd(Cases),
+    sem = sd(Cases) / sqrt(length(Cases))
+  )
 
 q <- ggplot(dt, aes(x = Date, y = Cases, group = County)) +
   geom_line(aes(color = Status)) +
   scale_color_manual(values=c("#e10304", "#0db104", "#9eb4cc")) +
+  theme_linedraw() +
+  labs(title = "Cases relative to 1st day of Stage 1 (May 15, 2020)",
+       x = "Date",
+       y = "% variation (100% = daily # cases on May 15, 2020)",
+       caption = paste("Explanations at https://jepoirrier.org/mdcovid19/; COVID-19 data from https://coronavirus.maryland.gov/; last update:", format(Sys.Date(), "%b %d, %Y"))) +
+  annotate("segment", x = as.Date("200519", "%y%m%d"), y = 10,
+           xend = as.Date("200519", "%y%m%d"), yend = 0,
+           size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+  annotate("text", label = "Testing broadening\nMay 19, 2020",
+           x = as.Date("200519", "%y%m%d"), y = 22,
+           size = 4, fontface = "italic")
+
+# Trying: this plot only the average line
+q <- ggplot(dtS, aes(x = Date, y = mean)) +
+  geom_line(aes(color = Status)) +
+  scale_color_manual(values=c("#e10304", "#0db104", "#9eb4cc")) +
+  theme_linedraw() +
+  labs(title = "Average cases relative to 1st day of Stage 1 (May 15, 2020)",
+       x = "Date",
+       y = "% variation (100% = daily # cases on May 15, 2020)",
+       caption = paste("Explanations at https://jepoirrier.org/mdcovid19/; COVID-19 data from https://coronavirus.maryland.gov/; last update:", format(Sys.Date(), "%b %d, %Y"))) +
+  annotate("segment", x = as.Date("200519", "%y%m%d"), y = 10,
+           xend = as.Date("200519", "%y%m%d"), yend = 0,
+           size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+  annotate("text", label = "Testing broadening\nMay 19, 2020",
+           x = as.Date("200519", "%y%m%d"), y = 22,
+           size = 4, fontface = "italic")
+
+# Trying: ggplot could do the stats directly
+uci <- function(y){mean(y) + qnorm(abs(0.05)/2) * sd(y)}
+lci <- function(y){mean(y) - qnorm(abs(0.05)/2) * sd(y)}
+qS <- ggplot(dt, aes(x = Date, y = Cases, group = County)) +
+  geom_point(aes(group = Status, color = Status)) +
+  stat_summary(
+    mapping = aes(x = Date, y = Cases, group = Status),
+    fun = "mean",
+    geom = "line",
+    fun.min = "lci",
+    fun.max = "uci",
+    #alpha=0.25
+    )
+q
+  #scale_color_manual(values=c("#e10304", "#0db104", "#9eb4cc")) +
   theme_linedraw() +
   labs(title = "Cases relative to 1st day of Stage 1 (May 15, 2020)",
        x = "Date",
