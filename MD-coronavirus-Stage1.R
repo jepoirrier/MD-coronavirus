@@ -155,7 +155,7 @@ dt <- pivot_longer(data = datB, cols = cols2pivot, names_to = "County", values_t
 # Add group of Phase 1 the county is in
 dt <- merge(dt, datStage1, by = "County")
 
-# Summarize by simple mead by group
+# Summarize by simple mean by group
 dtS <- dt %>%
   group_by(Date, Status) %>%
   summarise(
@@ -196,33 +196,37 @@ q <- ggplot(dtS, aes(x = Date, y = mean)) +
            size = 4, fontface = "italic")
 
 # Trying: ggplot could do the stats directly
-# uci <- function(y){mean(y) + qnorm(abs(0.05)/2) * sd(y)}
-# lci <- function(y){mean(y) - qnorm(abs(0.05)/2) * sd(y)}
-# qS <- ggplot(dt, aes(x = Date, y = Cases, group = County)) +
-#   geom_point(aes(group = Status, color = Status)) +
-#   stat_summary(
-#     mapping = aes(x = Date, y = Cases, group = Status),
-#     fun = "mean",
-#     geom = "line",
-#     fun.min = "lci",
-#     fun.max = "uci",
-#     #alpha=0.25
-#     )
-q
-  #scale_color_manual(values=c("#e10304", "#0db104", "#9eb4cc")) +
-  # theme_linedraw() +
-  # labs(title = "Cases relative to 1st day of Stage 1 (May 15, 2020)",
-  #      x = "Date",
-  #      y = "% variation (100% = daily # cases on May 15, 2020)",
-  #      caption = paste("Explanations at https://jepoirrier.org/mdcovid19/; COVID-19 data from https://coronavirus.maryland.gov/; last update:", format(Sys.Date(), "%b %d, %Y"))) +
-  # annotate("segment", x = as.Date("200519", "%y%m%d"), y = 10,
-  #          xend = as.Date("200519", "%y%m%d"), yend = 0,
-  #          size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
-  # annotate("text", label = "Testing broadening\nMay 19, 2020",
-  #          x = as.Date("200519", "%y%m%d"), y = 22,
-  #          size = 4, fontface = "italic")
-
-r <- ggarrange(p, q, heights = c(1, 1), 
+uci <- function(y){mean(y) + qnorm(abs(0.05)/2) * sd(y)}
+lci <- function(y){mean(y) - qnorm(abs(0.05)/2) * sd(y)}
+qS <- ggplot(dt, aes(x = Date, y = Cases, group = County)) +
+  geom_point(aes(group = Status, color = Status)) +
+  stat_summary( # building the lines and ribbon in 2 steps
+    mapping = aes(x = Date, y = Cases, group = Status, color = Status),
+    fun = "mean",
+    geom = "line",
+    alpha = 0.9
+  ) +
+  stat_summary(
+    mapping = aes(x = Date, y = Cases, group = Status, fill = Status),
+    fun = "mean",
+    geom = "ribbon",
+    fun.min = "lci",
+    fun.max = "uci",
+    alpha = 0.15
+    ) +
+  theme_linedraw() +
+  labs(title = "Average cases relative to 1st day of Stage 1 (May 15, 2020)",
+       x = "Date",
+       y = "% variation (100% = daily # cases on May 15, 2020)",
+       caption = paste("Dots: individual county value; line: average by status; zone: confidence interval by status\nExplanations at https://jepoirrier.org/mdcovid19/; COVID-19 data from https://coronavirus.maryland.gov/; last update:", format(Sys.Date(), "%b %d, %Y"))) +
+  annotate("segment", x = as.Date("200519", "%y%m%d"), y = 10,
+           xend = as.Date("200519", "%y%m%d"), yend = 0,
+           size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+  annotate("text", label = "Testing broadening\nMay 19, 2020",
+           x = as.Date("200519", "%y%m%d"), y = 22,
+           size = 4, fontface = "italic")
+qS
+r <- ggarrange(p, qS, heights = c(1, 1), 
                ncol = 1, nrow = 2)
 r
 
