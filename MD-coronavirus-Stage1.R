@@ -164,20 +164,20 @@ dtS <- dt %>%
     sem = sd(Cases) / sqrt(length(Cases))
   )
 
-q <- ggplot(dt, aes(x = Date, y = Cases, group = County)) +
-  geom_line(aes(color = Status)) +
-  scale_color_manual(values=c("#e10304", "#0db104", "#9eb4cc")) +
-  theme_linedraw() +
-  labs(title = "Cases relative to 1st day of Stage 1 (May 15, 2020)",
-       x = "Date",
-       y = "% variation (100% = daily # cases on May 15, 2020)",
-       caption = paste("Explanations at https://jepoirrier.org/mdcovid19/; COVID-19 data from https://coronavirus.maryland.gov/; last update:", format(Sys.Date(), "%b %d, %Y"))) +
-  annotate("segment", x = as.Date("200519", "%y%m%d"), y = 10,
-           xend = as.Date("200519", "%y%m%d"), yend = 0,
-           size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
-  annotate("text", label = "Testing broadening\nMay 19, 2020",
-           x = as.Date("200519", "%y%m%d"), y = 22,
-           size = 4, fontface = "italic")
+# q <- ggplot(dt, aes(x = Date, y = Cases, group = County)) +
+#   geom_line(aes(color = Status)) +
+#   scale_color_manual(values=c("#e10304", "#0db104", "#9eb4cc")) +
+#   theme_linedraw() +
+#   labs(title = "Cases relative to 1st day of Stage 1 (May 15, 2020)",
+#        x = "Date",
+#        y = "% variation (100% = daily # cases on May 15, 2020)",
+#        caption = paste("Explanations at https://jepoirrier.org/mdcovid19/; COVID-19 data from https://coronavirus.maryland.gov/; last update:", format(Sys.Date(), "%b %d, %Y"))) +
+#   annotate("segment", x = as.Date("200519", "%y%m%d"), y = 10,
+#            xend = as.Date("200519", "%y%m%d"), yend = 0,
+#            size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+#   annotate("text", label = "Testing broadening\nMay 19, 2020",
+#            x = as.Date("200519", "%y%m%d"), y = 22,
+#            size = 4, fontface = "italic")
 
 # Trying: this plot only the average line
 q <- ggplot(dtS, aes(x = Date, y = mean)) +
@@ -196,31 +196,31 @@ q <- ggplot(dtS, aes(x = Date, y = mean)) +
            size = 4, fontface = "italic")
 
 # Trying: ggplot could do the stats directly
-uci <- function(y){mean(y) + qnorm(abs(0.05)/2) * sd(y)}
-lci <- function(y){mean(y) - qnorm(abs(0.05)/2) * sd(y)}
-qS <- ggplot(dt, aes(x = Date, y = Cases, group = County)) +
-  geom_point(aes(group = Status, color = Status)) +
-  stat_summary(
-    mapping = aes(x = Date, y = Cases, group = Status),
-    fun = "mean",
-    geom = "line",
-    fun.min = "lci",
-    fun.max = "uci",
-    #alpha=0.25
-    )
+# uci <- function(y){mean(y) + qnorm(abs(0.05)/2) * sd(y)}
+# lci <- function(y){mean(y) - qnorm(abs(0.05)/2) * sd(y)}
+# qS <- ggplot(dt, aes(x = Date, y = Cases, group = County)) +
+#   geom_point(aes(group = Status, color = Status)) +
+#   stat_summary(
+#     mapping = aes(x = Date, y = Cases, group = Status),
+#     fun = "mean",
+#     geom = "line",
+#     fun.min = "lci",
+#     fun.max = "uci",
+#     #alpha=0.25
+#     )
 q
   #scale_color_manual(values=c("#e10304", "#0db104", "#9eb4cc")) +
-  theme_linedraw() +
-  labs(title = "Cases relative to 1st day of Stage 1 (May 15, 2020)",
-       x = "Date",
-       y = "% variation (100% = daily # cases on May 15, 2020)",
-       caption = paste("Explanations at https://jepoirrier.org/mdcovid19/; COVID-19 data from https://coronavirus.maryland.gov/; last update:", format(Sys.Date(), "%b %d, %Y"))) +
-  annotate("segment", x = as.Date("200519", "%y%m%d"), y = 10,
-           xend = as.Date("200519", "%y%m%d"), yend = 0,
-           size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
-  annotate("text", label = "Testing broadening\nMay 19, 2020",
-           x = as.Date("200519", "%y%m%d"), y = 22,
-           size = 4, fontface = "italic")
+  # theme_linedraw() +
+  # labs(title = "Cases relative to 1st day of Stage 1 (May 15, 2020)",
+  #      x = "Date",
+  #      y = "% variation (100% = daily # cases on May 15, 2020)",
+  #      caption = paste("Explanations at https://jepoirrier.org/mdcovid19/; COVID-19 data from https://coronavirus.maryland.gov/; last update:", format(Sys.Date(), "%b %d, %Y"))) +
+  # annotate("segment", x = as.Date("200519", "%y%m%d"), y = 10,
+  #          xend = as.Date("200519", "%y%m%d"), yend = 0,
+  #          size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+  # annotate("text", label = "Testing broadening\nMay 19, 2020",
+  #          x = as.Date("200519", "%y%m%d"), y = 22,
+  #          size = 4, fontface = "italic")
 
 r <- ggarrange(p, q, heights = c(1, 1), 
                ncol = 1, nrow = 2)
