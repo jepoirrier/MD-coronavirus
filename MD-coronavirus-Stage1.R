@@ -406,7 +406,7 @@ r <- ggarrange(p, qS, heights = c(1, 1),
                ncol = 1, nrow = 2)
 r
 
-ggsave("figures/MD-COVID19-counties-Stage1deathsAA.png", plot = r, device = "png", width = plotWidth, height = plotHeightLong, units = "in")
+ggsave("figures/MD-COVID19-counties-Stage1deaths.png", plot = r, device = "png", width = plotWidth, height = plotHeightLong, units = "in")
 
 
 
