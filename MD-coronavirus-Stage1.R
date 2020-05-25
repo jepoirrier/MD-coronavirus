@@ -326,6 +326,7 @@ dt$Date <- as.Date(sprintf("%d",dt$Date), "%y%m%d")
 
 p <- ggplot(dt, aes(x = Date, y = Deaths, group = County)) +
   geom_line(aes(color = County), lwd = 1) +
+  #gghighlight(County == "AnneArundel") +
   theme_linedraw() +
   labs(title = "7-Day average daily new COVID-19-confirmed deaths in Maryland counties, USA (2020)",
        x = "Date",
@@ -374,6 +375,7 @@ dtS <- dt %>%
 
 qS <- ggplot(dt, aes(x = Date, y = Deaths, group = County)) +
   geom_point(aes(group = Status, color = Status)) +
+  #geom_line(data = subset(dt, County =="AnneArundel"), aes(x = Date, y = Deaths)) +
   stat_summary( # building the lines and ribbon in 2 steps
     mapping = aes(x = Date, y = Deaths, group = Status, color = Status),
     fun = "mean",
@@ -404,7 +406,7 @@ r <- ggarrange(p, qS, heights = c(1, 1),
                ncol = 1, nrow = 2)
 r
 
-ggsave("figures/MD-COVID19-counties-Stage1deaths.png", plot = r, device = "png", width = plotWidth, height = plotHeightLong, units = "in")
+ggsave("figures/MD-COVID19-counties-Stage1deathsAA.png", plot = r, device = "png", width = plotWidth, height = plotHeightLong, units = "in")
 
 
 
