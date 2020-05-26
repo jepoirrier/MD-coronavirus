@@ -212,11 +212,19 @@ qS <- ggplot(dt, aes(x = Date, y = Cases, group = County)) +
        x = "Date",
        y = "% variation (100% = daily # cases on May 15, 2020)",
        caption = paste("Dots: individual county value; line: average by status; zone: confidence interval by status\nExplanations at https://jepoirrier.org/mdcovid19/; COVID-19 data from https://coronavirus.maryland.gov/; last update:", format(Sys.Date(), "%b %d, %Y"))) +
+  # Annotation for broadening tests
   annotate("segment", x = as.Date("200519", "%y%m%d"), y = 10,
            xend = as.Date("200519", "%y%m%d"), yend = 0,
            size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
   annotate("text", label = "Testing broadening\nMay 19, 2020",
            x = as.Date("200519", "%y%m%d"), y = 22,
+           size = 4, fontface = "italic") +
+  # Annotation for Memorial Day
+  annotate("segment", x = as.Date("200525", "%y%m%d"), y = 10,
+           xend = as.Date("200525", "%y%m%d"), yend = 0,
+           size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+  annotate("text", label = "Memorial Day\nMay 25, 2020",
+           x = as.Date("200525", "%y%m%d"), y = 22,
            size = 4, fontface = "italic")
 qS
 r <- ggarrange(p, qS, heights = c(1, 1), 
@@ -395,12 +403,21 @@ qS <- ggplot(dt, aes(x = Date, y = Deaths, group = County)) +
        x = "Date",
        y = "% variation (100% = daily # deaths on May 15, 2020)",
        caption = paste("Dots: individual county value; line: average by status; zone: confidence interval by status\nExplanations at https://jepoirrier.org/mdcovid19/; COVID-19 data from https://coronavirus.maryland.gov/; last update:", format(Sys.Date(), "%b %d, %Y"))) +
+  # Annotation for broadening tests
   annotate("segment", x = as.Date("200519", "%y%m%d"), y = 10,
            xend = as.Date("200519", "%y%m%d"), yend = 0,
            size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
   annotate("text", label = "Testing broadening\nMay 19, 2020",
            x = as.Date("200519", "%y%m%d"), y = 22,
+           size = 4, fontface = "italic") +
+  # Annotation for Memorial Day
+  annotate("segment", x = as.Date("200525", "%y%m%d"), y = 10,
+           xend = as.Date("200525", "%y%m%d"), yend = 0,
+           size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+  annotate("text", label = "Memorial Day\nMay 25, 2020",
+           x = as.Date("200525", "%y%m%d"), y = 22,
            size = 4, fontface = "italic")
+
 qS
 r <- ggarrange(p, qS, heights = c(1, 1), 
                ncol = 1, nrow = 2)
