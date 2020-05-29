@@ -125,7 +125,7 @@ plotDailyCasesOverTime <- function(dat, logScale = FALSE) {
     labs(title = "Daily proportion of Coronavirus test results in Maryland, USA (2020)",
          x = "Date",
          y = paste("Daily percentage (% of total # of tests)", logWarning),
-         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
+         caption = paste("Percentage of unique tests: MD Health Department doesn't provide repetitive tests\nExplanations at https://jepoirrier.org/mdcovid19/ ; data from https://coronavirus.maryland.gov/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
   
   #ggsave("figures/MD-COVID19-tests-daily.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
@@ -173,7 +173,7 @@ plotDailyTestsOverTime <- function(dat) {
     labs(title = "Daily percentage of positive Coronavirus tests reported",
          x = "Date",
          y = paste("Daily % of positive tests"),
-         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y"))
+         caption = paste("Percentage of unique tests: MD Health Department doesn't provide repetitive tests\nExplanations at https://jepoirrier.org/mdcovid19/ ; data from https://coronavirus.maryland.gov/ ; last update:", format(Sys.Date(), "%b %d, %Y"))
     )
 
   #multiplot(p, q, cols = 1)
@@ -289,7 +289,7 @@ plotPositiveTestPc <- function(dat, lastDateCases, lastMaxPositiveCases) {
     labs(title = "Proportion of cumulative positive Coronavirus tests in Maryland, USA (2020)",
          x = "Date",
          y = "Percentage of cumulative positive tests (%)",
-         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y"))) +
+         caption = paste("Percentage of unique tests: MD Health Department doesn't provide repetitive tests\nExplanations at https://jepoirrier.org/mdcovid19/ ; data from https://coronavirus.maryland.gov/ ; last update:", format(Sys.Date(), "%b %d, %Y"))) +
     # manually place the arrow and label highlighting the last data
     annotate("segment", x = as.Date(lastDateCases) - 3.5, y = lastPositivePC,
              xend = as.Date(lastDateCases) - 2, yend = lastPositivePC,
