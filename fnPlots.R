@@ -115,6 +115,13 @@ plotDailyCasesOverTime <- function(dat, logScale = FALSE) {
     geom_area(aes(fill= Tests), position = 'stack') +
     scale_fill_manual(values = c("#999999", "#E69F00")) +
     theme_linedraw() +
+    # Annotation for broadening tests
+    annotate("segment", x = as.Date("200519", "%y%m%d"), y = 25,
+             xend = as.Date("200519", "%y%m%d"), yend = 0,
+             size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+    annotate("text", label = "Testing broadening\nMay 19, 2020",
+             x = as.Date("200519", "%y%m%d"), y = 33,
+             size = 4, fontface = "italic") +
     # manually place the arrow and label highlighting the last data
     annotate("segment", x = as.Date(lastDateCases) - 3.5, y = 40,
              xend = as.Date(lastDateCases), yend = lastPositivePC + 2,
@@ -159,6 +166,13 @@ plotDailyTestsOverTime <- function(dat) {
     geom_line() +
     geom_smooth(mapping = aes(x = Date, y = NewTests)) +
     theme_linedraw() +
+    # Annotation for broadening tests
+    annotate("segment", x = as.Date("200519", "%y%m%d"), y = 1700,
+             xend = as.Date("200519", "%y%m%d"), yend = 0,
+             size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+    annotate("text", label = "Testing broadening\nMay 19, 2020",
+             x = as.Date("200519", "%y%m%d"), y = 2500,
+             size = 4, fontface = "italic") +
     labs(title = "Daily number of Coronavirus tests reported in Maryland, USA (2020)",
          x = "Date",
          y = paste("Daily number of tests")
@@ -170,6 +184,13 @@ plotDailyTestsOverTime <- function(dat) {
     geom_line() +
     geom_smooth(mapping = aes(x = Date, y = DailyPositive)) +
     theme_linedraw() +
+    # Annotation for broadening tests
+    annotate("segment", x = as.Date("200519", "%y%m%d"), y = 4,
+             xend = as.Date("200519", "%y%m%d"), yend = 0,
+             size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+    annotate("text", label = "Testing broadening\nMay 19, 2020",
+             x = as.Date("200519", "%y%m%d"), y = 7,
+             size = 4, fontface = "italic") +
     labs(title = "Daily percentage of positive Coronavirus tests reported",
          x = "Date",
          y = paste("Daily % of positive tests"),
