@@ -193,6 +193,7 @@ uci <- function(y){mean(y) + qnorm(abs(0.05)/2) * sd(y)}
 lci <- function(y){mean(y) - qnorm(abs(0.05)/2) * sd(y)}
 qS <- ggplot(dt, aes(x = Date, y = Cases, group = County)) +
   geom_point(aes(group = Status, color = Status)) +
+  #geom_line(data = subset(dt, County == "AnneArundel"), aes(x = Date, y = Cases)) +
   stat_summary( # building the lines and ribbon in 2 steps
     mapping = aes(x = Date, y = Cases, group = Status, color = Status),
     fun = "mean",
@@ -383,7 +384,7 @@ dtS <- dt %>%
 
 qS <- ggplot(dt, aes(x = Date, y = Deaths, group = County)) +
   geom_point(aes(group = Status, color = Status)) +
-  #geom_line(data = subset(dt, County =="Charles"), aes(x = Date, y = Deaths)) +
+  #geom_line(data = subset(dt, County == "AnneArundel"), aes(x = Date, y = Deaths)) +
   stat_summary( # building the lines and ribbon in 2 steps
     mapping = aes(x = Date, y = Deaths, group = Status, color = Status),
     fun = "mean",

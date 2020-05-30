@@ -62,6 +62,7 @@ p <- ggplot(dt, aes(x = Date, y = Tests, group = County)) +
   geom_line(aes(color = County), lwd = 1) +
   geom_point(aes(color = County, shape = County)) +
   theme_linedraw() +
+  #gghighlight(County == "AnneArundel") +
   labs(title = "Evolution of COVID-19 confirmed cases in Maryland counties, USA (2020)",
        y = "Cumulative cases")
 
@@ -77,6 +78,7 @@ q <- ggplot(dt, aes(x = Date, y = Tests, group = County)) +
   geom_line(aes(color = County), lwd = 1) +
   geom_point(aes(color = County, shape = County)) +
   theme_linedraw() +
+  #gghighlight(County == "AnneArundel") +
   #geom_hline(yintercept = cphtUS, linetype = "dashed", color = "black") + # complete horiz line is wrong because induce constant level since time on x-axis
   annotate("segment", x = as.Date(as.Date(sprintf("%d", max(datX$Date)), "%y%m%d")) - 5, y = cphtUS,
            xend = as.Date(as.Date(sprintf("%d", max(datX$Date)), "%y%m%d")), yend = cphtUS,
@@ -123,7 +125,7 @@ p <- ggplot(dt, aes(x = Date, y = Deaths, group = County)) +
   geom_line(aes(color = County), lwd = 1) +
   geom_point(aes(color = County, shape = County)) +
   theme_linedraw() +
-  #gghighlight(County == "Charles") +
+  #gghighlight(County == "AnneArundel") +
   labs(title = "Evolution of COVID-19-confirmed deaths in Maryland counties, USA (2020)",
        x = "Date",
        y = "Cumulative number of deaths")
@@ -152,7 +154,7 @@ q <- ggplot(dt, aes(x = Date, y = Deaths, group = County)) +
   geom_line(aes(color = County), lwd = 1) +
   geom_point(aes(color = County, shape = County)) +
   theme_linedraw() +
-  #gghighlight(County == "Charles") +
+  #gghighlight(County == "AnneArundel") +
   labs(title = "Evolution of COVID-19-specific death rate, USA (2020)",
        x = "Date",
        y = "COVID-19-specific death rate\n(# deaths / 100,000 pop)",
