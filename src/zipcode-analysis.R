@@ -56,7 +56,6 @@ p <- ggplot(dt, aes(x = Date, y = Cases, group = ZIPCODE)) +
   labs(title = "Evolution of Coronavirus positive cases by zip codes in Maryland, USA (2020)",
        y = "Cumulative positive tests counts")
 p
-ggsave("../figures/zip-cases.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
 
 dt2 <- pivot_wider(data = dt, names_from = ZIPCODE, values_from = Cases)
 
@@ -75,7 +74,7 @@ q <- ggplot(dt4, aes(x = Date, y = Cases, group = ZIPCODE)) +
   geom_line(aes(color = ZIPCODE)) +
   ylim(0, 150) +
   #gghighlight((Cases > 50 & Date > "2020-05-20"), label_key = ZIPCODE) +
-  gghighlight(ZIPCODE %in% c("21224", "21223", "20906", "20783", "20906", "20706"), label_key = ZIPCODE) +
+  gghighlight(ZIPCODE %in% c("21224", "21223", "20906", "20783", "20906", "20706"), label_key = ZIPCODE, label_params = list(size = 3)) +
   theme_linedraw() +
   theme(legend.position = "none") +
   labs(title = "Evolution of daily positive COVID-19 cases in Montgomery County zip codes (2020)",
