@@ -37,9 +37,10 @@ Zipcols <- gsub('total', '', Zipcols)
 # cosmetic: change "ZIP_CODE" to "zipcode" (do not just remove '_')
 Zipcols <- gsub('ZIP_CODE', 'ZIPCODE', Zipcols)
 
+colnames(datZip) <- Zipcols
+
 datZip$ZIPCODE <- as.factor(as.character(datZip$ZIPCODE))
 
-colnames(datZip) <- Zipcols
 cols2pivot <- Zipcols[2:length(Zipcols)] # we don't need ZIPCODE
 dt <- pivot_longer(data = datZip, cols = cols2pivot, names_to = "Date", values_to = "Cases", values_drop_na = TRUE)
 dt$Date <- as.character(dt$Date)
@@ -81,7 +82,7 @@ q <- ggplot(dt4, aes(x = Date, y = Cases, group = ZIPCODE)) +
        x = "Date",
        y = "Daily positive tests counts",
        caption = paste("Note: data for ZIP codes with 7 or fewer cases are not present on the MDH dashboard (and hence nor here)\nExplanations at https://jepoirrier.org/mdcovid19/ - data from https://coronavirus.maryland.gov/ - last update:", format(Sys.Date(), "%b %d, %Y")))
-
+q
 r <- ggarrange(p, q, heights = c(1, 1), 
                ncol = 1, nrow = 2)
 r
