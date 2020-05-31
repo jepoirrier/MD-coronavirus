@@ -7,6 +7,11 @@
 # https://data.imap.maryland.gov/datasets/mdcovid19-master-zip-code-cases
 # Download URL to check if not moving every day
 
+library(dplyr)
+library(gghighlight)
+library(ggplot2)
+library(tidyr)
+
 ZipURL <- "https://opendata.arcgis.com/datasets/5f459467ee7a4ffda968139011f06c46_0.csv"
 ZipFile <- "../data/zip.csv"
 
