@@ -54,9 +54,7 @@ p <- ggplot(dt, aes(x = Date, y = Cases, group = ZIPCODE)) +
   theme_linedraw() +
   theme(legend.position = "none") +
   labs(title = "Evolution of Coronavirus positive cases by zip codes in Maryland, USA (2020)",
-       x = "Date",
-       y = "Cumulative positive tests counts",
-       caption = paste("Note: data for ZIP codes with 7 or fewer cases are not present on the MDH dashboard (and hence nor here)\nExplanations at https://jepoirrier.org/mdcovid19/ - data from https://coronavirus.maryland.gov/ - last update:", format(Sys.Date(), "%b %d, %Y")))
+       y = "Cumulative positive tests counts")
 p
 ggsave("../figures/zip-cases.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
 
