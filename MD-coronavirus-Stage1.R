@@ -228,11 +228,11 @@ qS <- ggplot(dt, aes(x = Date, y = Cases, group = County)) +
            x = as.Date("200525", "%y%m%d"), y = 22,
            size = 4, fontface = "italic") +
   # Annotation for Memorial Day
-  annotate("segment", x = as.Date("200529", "%y%m%d"), y = 10,
+  annotate("segment", x = as.Date("200529", "%y%m%d"), y = -10,
            xend = as.Date("200529", "%y%m%d"), yend = 0,
            size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
-  annotate("text", label = "BaltCit, MoCo, PG\npartial opening\nMay 29, 2020",
-           x = as.Date("200529", "%y%m%d"), y = 22,
+  annotate("text", label = "BaltCity, MoCo, PG\npartial opening\nMay 29, 2020",
+           x = as.Date("200529", "%y%m%d"), y = -40,
            size = 4, fontface = "italic")
 
 qS
@@ -413,18 +413,25 @@ qS <- ggplot(dt, aes(x = Date, y = Deaths, group = County)) +
        y = "% variation (100% = daily # deaths on May 15, 2020)",
        caption = paste("Dots: individual county value; line: average by status; zone: confidence interval by status\nExplanations at https://jepoirrier.org/mdcovid19/; COVID-19 data from https://coronavirus.maryland.gov/; last update:", format(Sys.Date(), "%b %d, %Y"))) +
   # Annotation for broadening tests
-  annotate("segment", x = as.Date("200519", "%y%m%d"), y = 10,
+  annotate("segment", x = as.Date("200519", "%y%m%d"), y = -15,
            xend = as.Date("200519", "%y%m%d"), yend = 0,
            size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
   annotate("text", label = "Testing broadening\nMay 19, 2020",
-           x = as.Date("200519", "%y%m%d"), y = 22,
+           x = as.Date("200519", "%y%m%d"), y = -75,
            size = 4, fontface = "italic") +
   # Annotation for Memorial Day
-  annotate("segment", x = as.Date("200525", "%y%m%d"), y = 10,
+  annotate("segment", x = as.Date("200525", "%y%m%d"), y = -15,
            xend = as.Date("200525", "%y%m%d"), yend = 0,
            size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
   annotate("text", label = "Memorial Day\nMay 25, 2020",
-           x = as.Date("200525", "%y%m%d"), y = 22,
+           x = as.Date("200525", "%y%m%d"), y = -75,
+           size = 4, fontface = "italic") +
+  # Annotation for Memorial Day
+  annotate("segment", x = as.Date("200529", "%y%m%d"), y = -15,
+           xend = as.Date("200529", "%y%m%d"), yend = 0,
+           size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+  annotate("text", label = "BaltCity, MoCo, PG\npartial opening\nMay 29, 2020",
+           x = as.Date("200529", "%y%m%d"), y = -125,
            size = 4, fontface = "italic")
 
 
