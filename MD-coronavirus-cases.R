@@ -96,10 +96,7 @@ MDNursingNCols <- 5
 # ResidentDeaths: number of deaths in residents
 datNursing <- read.csv(MDNursingFile, sep = " ", colClasses = c(rep("numeric", MDNursingNCols)))
 
-# Read data for ZIP cases
-MDZIPFile <- 'MD-corona-ZIP.txt'
-MDZIPNCols <- 3
-datZip <- read.csv(MDZIPFile, sep = " ", colClasses = c(rep("numeric", MDZIPNCols)))
+# Zip cases moved to v2 in src/zipcode-analysis.R
 
 # Plot things now
 plotTotalCasesOverTime(datCases, lastDateCases, lastMaxPositiveCases, logScale = TRUE)
@@ -125,5 +122,3 @@ plotGenderSection(datGender)
 plotRaceCasesOverTime(datRace)
 plotRaceDeathsOverTime(datRace)
 plotRaceSection(datRace)
-
-plotZipCasesOverTime(datZip, zip2highlight = 20783)

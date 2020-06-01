@@ -676,26 +676,3 @@ plotRaceSection <- function(dat) {
   
   return(p)
 }
-
-#' Plot the trend in number of cases by zip code over time
-#' needs data from ZIP.txt
-plotZipCasesOverTime <- function(dat, zip2highlight = 21215) {
-  dat$Date <- as.Date(sprintf("%d", dat$Date), "%y%m%d")
-  dat$ZipCode <- as.factor(as.character(dat$ZipCode))
-  #dat <- subset(dat, max(dat$Cases) > 100)
-  
-  p <- ggplot(dat, aes(x = Date, y = Cases, group = ZipCode)) +
-    geom_line(aes(color = ZipCode)) +
-    #gghighlight(ZipCode == zip2highlight) +
-    gghighlight(Cases > 1000, label_key = ZipCode) +
-    theme_linedraw() +
-    theme(legend.position = "none") +
-    labs(title = "Evolution of Coronavirus positive cases by zip codes in Maryland, USA (2020)",
-         x = "Date",
-         y = "Cumulative positive tests counts",
-         caption = paste("Note: data for ZIP codes with 7 or fewer cases are not present on the MDH dashboard (and hence nor here)\nData from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
-  p
-  ggsave("figures/MD-COVID19-zip-cases.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
-  
-  return(p)
-}
