@@ -226,7 +226,15 @@ qS <- ggplot(dt, aes(x = Date, y = Cases, group = County)) +
            size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
   annotate("text", label = "Memorial Day\nMay 25, 2020",
            x = as.Date("200525", "%y%m%d"), y = 22,
+           size = 4, fontface = "italic") +
+  # Annotation for Memorial Day
+  annotate("segment", x = as.Date("200529", "%y%m%d"), y = 10,
+           xend = as.Date("200529", "%y%m%d"), yend = 0,
+           size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+  annotate("text", label = "BaltCit, MoCo, PG\npartial opening\nMay 29, 2020",
+           x = as.Date("200529", "%y%m%d"), y = 22,
            size = 4, fontface = "italic")
+
 qS
 r <- ggarrange(p, qS, heights = c(1, 1), 
                ncol = 1, nrow = 2)
