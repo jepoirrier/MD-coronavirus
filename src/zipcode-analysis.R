@@ -16,7 +16,11 @@ ZipURL <- "https://opendata.arcgis.com/datasets/5f459467ee7a4ffda968139011f06c46
 ZipFile <- "../data/zip.csv"
 
 # Download the data
-download.file(ZipURL, ZipFile, "auto") # might switch to curl to support Windows
+if(as.Date(file.info(ZipFile)$ctime) < as.Date(Sys.Date())) {
+  download.file(ZipURL, ZipFile, "auto") # might switch to curl to support Windows
+} else {
+  print("Download skipped as ZipFile already downloaded today")
+}
 if(file.exists(ZipFile)) {
   print(paste("ZipFile found, created on:", file.info(ZipFile)$ctime))
 } else {
