@@ -18,6 +18,7 @@ plotHeightLong <- 10 # for multiple graphs: 9 (= 3 times 3) + 1
 library(dplyr)
 library(gghighlight)
 library(ggplot2)
+library(ggseas)
 library(tidyr)
 
 # CUMULATIVE death confirmed
@@ -128,5 +129,26 @@ r <- ggarrange(p, q, heights = c(1, 1),
                ncol = 1, nrow = 2, align = "v")
 r
 ggsave("../figures/deaths-confirmed.png", plot = r, device = "png", width = plotWidth, height = plotHeightLong, units = "in")
+
+
+
+# Let's look for a TREND
+
+# non-ggplot way
+#plot(x = dtDC$Date, y = dtDC$Confirmed, type='l')
+#units <- ts(dtDC$Confirmed, frequency = 7)
+#decomp <- stl(units, s.window = 'periodic')
+#plot(decomp)
+
+s <- ggsdc(dtDC, aes(x = Date, y = Confirmed), frequency = 7, method = 'decompose') +
+  geom_line() +
+  theme_linedraw() +
+  #theme(legend.position = "none") +
+  labs(title = "Evolution of daily Coronavirus confirmed deaths in Maryland, USA (2020)",
+       x = "Date",
+       y = "Daily confirmed deaths",
+       caption = paste("Explanations at https://jepoirrier.org/mdcovid19/ - data from https://coronavirus.maryland.gov/ - last update:", format(Sys.Date(), "%b %d, %Y")))
+
+ggsave("../figures/deaths-confirmedTrend.png", plot = r, device = "png", width = plotWidth, height = plotHeight, units = "in")
 
 
