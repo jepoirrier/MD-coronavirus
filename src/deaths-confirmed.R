@@ -11,17 +11,22 @@
 # https://data.imap.maryland.gov/datasets/mdcovid19-totalconfirmeddeathsbydateofdeath
 # Download URL to check if not moving every day
 
+library(dplyr)
+library(gghighlight)
+library(ggplot2)
+library(ggseas) # for decompose
+library(ini)
+library(scales) # for x-axis ticks
+library(tidyr)
+
 plotWidth <- 12
 plotHeight <- 7 # for single graph: 6 (= 2 times 3) + 1
 plotHeightLong <- 10 # for multiple graphs: 9 (= 3 times 3) + 1
 Nbreaks <- 10 # default number of breaks for trend decomposition
 
-library(dplyr)
-library(gghighlight)
-library(ggplot2)
-library(ggseas) # for decompose
-library(scales) # for x-axis ticks
-library(tidyr)
+# Read an .ini file with point data in it
+iniFile <- "../data-other-sources/pointData.ini"
+pointData <- read.ini(iniFile)
 
 # CUMULATIVE death confirmed
 
@@ -49,6 +54,9 @@ datDC <- read.csv(DCFile, sep = ",", colClasses = c("integer", "Date", "integer"
 datDC$OBJECTID <- NULL
 # rename headers
 colnames(datDC) <- c("Date", "Confirmed")
+
+# calculate the COVID-19 mortality rate
+print(paste("COVID-19 mortality rate:", max(datDC$Confirmed) / as.double(pointData$MDPopulation$Total) * 100000, " / 100,000"))
 
 # Calculate daily delta from the cumulative count
 deltaF <- function(x, na.rm = FALSE) (x - lag(x, default = 0))
