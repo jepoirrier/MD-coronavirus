@@ -106,7 +106,6 @@ plotDailyTestsOverTime(datCases)
 plotCurrentlySickPatients(datCases, logScale = FALSE)
 plotNewSickPatients(datCases)
 plotPositiveTestPc(datCases, lastDateCases, lastMaxPositiveCases)
-plotDeathsOverTime(datCases)
 plotNursingCasesOverTime(datNursing, logScale = TRUE)
 plotPcNursingCases(datCases, datNursing)
 
