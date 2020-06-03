@@ -12,6 +12,10 @@ library(gghighlight)
 library(ggplot2)
 library(tidyr)
 
+plotWidth <- 12
+plotHeight <- 7 # for single graph: 6 (= 2 times 3) + 1
+plotHeightLong <- 10 # for multiple graphs: 9 (= 3 times 3) + 1
+
 ZipURL <- "https://opendata.arcgis.com/datasets/5f459467ee7a4ffda968139011f06c46_0.csv"
 ZipFile <- "../data/zip.csv"
 
@@ -88,7 +92,7 @@ q <- ggplot(dt4, aes(x = Date, y = Cases, group = ZIPCODE)) +
        caption = paste("Note: data for ZIP codes with 7 or fewer cases are not present on the MDH dashboard (and hence nor here)\nExplanations at https://jepoirrier.org/mdcovid19/ - data from https://coronavirus.maryland.gov/ - last update:", format(Sys.Date(), "%b %d, %Y")))
 q
 r <- ggarrange(p, q, heights = c(1, 1), 
-               ncol = 1, nrow = 2)
+               ncol = 1, nrow = 2,  align = "v")
 r
-ggsave("../figures/zip-cases.png", plot = r, device = "png", width = plotWidth, height = plotHeight, units = "in")
+ggsave("../figures/zip-cases.png", plot = r, device = "png", width = plotWidth, height = plotHeightLong, units = "in")
 
