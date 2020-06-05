@@ -9,3 +9,4 @@ source("MD-coronavirus-Stage1.R")
 
 setwd("src/")
 source("zipcode-analysis.R")
+source("deaths-confirmed.R")
