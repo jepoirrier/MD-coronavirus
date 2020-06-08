@@ -184,12 +184,26 @@ plotDailyTestsOverTime <- function(dat) {
     geom_line() +
     geom_smooth(mapping = aes(x = Date, y = DailyPositive)) +
     theme_linedraw() +
+    # Annotation for Stage 1
+    annotate("segment", x = as.Date("200515", "%y%m%d"), y = 2,
+             xend = as.Date("200515", "%y%m%d"), yend = 0,
+             size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+    annotate("text", label = "Stage 1",
+             x = as.Date("200515", "%y%m%d"), y = 4,
+             size = 4, fontface = "italic") +
     # Annotation for broadening tests
     annotate("segment", x = as.Date("200519", "%y%m%d"), y = 4,
              xend = as.Date("200519", "%y%m%d"), yend = 0,
              size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
     annotate("text", label = "Testing broadening\nMay 19, 2020",
              x = as.Date("200519", "%y%m%d"), y = 7,
+             size = 4, fontface = "italic") +
+    # Annotation for Stage 1
+    annotate("segment", x = as.Date("200605", "%y%m%d"), y = 2,
+             xend = as.Date("200605", "%y%m%d"), yend = 0,
+             size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+    annotate("text", label = "Stage 2",
+             x = as.Date("200605", "%y%m%d"), y = 4,
              size = 4, fontface = "italic") +
     labs(title = "Daily percentage of positive Coronavirus tests reported",
          x = "Date",

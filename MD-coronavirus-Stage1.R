@@ -227,12 +227,19 @@ qS <- ggplot(dt, aes(x = Date, y = Cases, group = County)) +
   annotate("text", label = "Memorial Day\nMay 25, 2020",
            x = as.Date("200525", "%y%m%d"), y = 22,
            size = 4, fontface = "italic") +
-  # Annotation for Memorial Day
+  # Annotation for Stage 1b
   annotate("segment", x = as.Date("200529", "%y%m%d"), y = -10,
            xend = as.Date("200529", "%y%m%d"), yend = 0,
            size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
   annotate("text", label = "BaltCity, MoCo, PG\npartial opening\nMay 29, 2020",
            x = as.Date("200529", "%y%m%d"), y = -40,
+           size = 4, fontface = "italic") +
+  # Annotation for Stage 2
+  annotate("segment", x = as.Date("200605", "%y%m%d"), y = 10,
+           xend = as.Date("200605", "%y%m%d"), yend = 0,
+           size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+  annotate("text", label = "Stage 2",
+           x = as.Date("200605", "%y%m%d"), y = 22,
            size = 4, fontface = "italic")
 
 qS
@@ -432,6 +439,13 @@ qS <- ggplot(dt, aes(x = Date, y = Deaths, group = County)) +
            size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
   annotate("text", label = "BaltCity, MoCo, PG\npartial opening\nMay 29, 2020",
            x = as.Date("200529", "%y%m%d"), y = -125,
+           size = 4, fontface = "italic") +
+  # Annotation for Stage 2
+  annotate("segment", x = as.Date("200605", "%y%m%d"), y = -15,
+           xend = as.Date("200605", "%y%m%d"), yend = 0,
+           size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+  annotate("text", label = "Stage 2\nJune 5, 2020",
+           x = as.Date("200605", "%y%m%d"), y = -75,
            size = 4, fontface = "italic")
 
 
