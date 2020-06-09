@@ -106,6 +106,7 @@ plotDailyTestsOverTime(datCases)
 plotCurrentlySickPatients(datCases, logScale = FALSE)
 plotNewSickPatients(datCases)
 plotPositiveTestPc(datCases, lastDateCases, lastMaxPositiveCases)
+plotDeathsOverTime(datCases) # again until the API is updated
 plotNursingCasesOverTime(datNursing, logScale = TRUE)
 plotPcNursingCases(datCases, datNursing)
 
