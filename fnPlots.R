@@ -343,6 +343,7 @@ plotPositiveTestPc <- function(dat, lastDateCases, lastMaxPositiveCases) {
 }
 
 # Not used anymore (can be deleted later)
+# Still useful if the API isn't being updated
 plotDeathsOverTime <- function(dat) {
   dt <- subset(dat, select = c("Date", "Deaths"))
   dt <- dt %>% mutate(dailyDeaths = Deaths - lag(Deaths, default = 0))
