@@ -15,12 +15,13 @@ library(tidyr)
 plotWidth <- 12
 plotHeight <- 7 # for single graph: 6 (= 2 times 3) + 1
 plotHeightLong <- 10 # for multiple graphs: 9 (= 3 times 3) + 1
+preventMultipleDownload <- FALSE
 
 ZipURL <- "https://opendata.arcgis.com/datasets/5f459467ee7a4ffda968139011f06c46_0.csv"
 ZipFile <- "../data/zip.csv"
 
 # Download the data
-if(as.Date(file.info(ZipFile)$ctime) < as.Date(Sys.Date())) {
+if((as.Date(file.info(ZipFile)$ctime) < as.Date(Sys.Date())) | !isTRUE(preventMultipleDownload)) {
   download.file(ZipURL, ZipFile, "auto") # might switch to curl to support Windows
 } else {
   print("Download skipped as ZipFile already downloaded today")

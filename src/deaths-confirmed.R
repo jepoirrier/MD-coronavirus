@@ -23,6 +23,7 @@ plotWidth <- 12
 plotHeight <- 7 # for single graph: 6 (= 2 times 3) + 1
 plotHeightLong <- 10 # for multiple graphs: 9 (= 3 times 3) + 1
 Nbreaks <- 10 # default number of breaks for trend decomposition
+preventMultipleDownload <- FALSE
 
 # Read an .ini file with point data in it
 iniFile <- "../data-other-sources/pointData.ini"
@@ -35,7 +36,7 @@ DCFile <- "../data/deaths-confirmed.csv"
 # DC = deaths confirmed
 
 # Download the data
-if(as.Date(file.info(DCFile)$ctime) < as.Date(Sys.Date())) {
+if((as.Date(file.info(DCFile)$ctime) < as.Date(Sys.Date())) | !isTRUE(preventMultipleDownload)) {
   download.file(DCURL, DCFile, "auto") # might switch to curl to support Windows
 } else {
   print("Download skipped as DCFile already downloaded today")
