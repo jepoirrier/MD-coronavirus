@@ -75,7 +75,7 @@ DCDFile <- "../data/deaths-confirmedDate.csv"
 # DC = deaths confirmed
 
 # Download the data
-if(as.Date(file.info(DCDFile)$ctime) < as.Date(Sys.Date())) {
+if((as.Date(file.info(DCDFile)$ctime) < as.Date(Sys.Date())) | !isTRUE(preventMultipleDownload)) {
   download.file(DCDURL, DCDFile, "auto") # might switch to curl to support Windows
 } else {
   print("Download skipped as DCDFile already downloaded today")
