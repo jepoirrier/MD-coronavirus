@@ -72,9 +72,10 @@ MDGenderFile <- 'MD-coronavirus-bygender.txt'
 # with no prefix = cases, prefix "D" = cases deaths (confirmed), prefix "PD" = probable deaths
 datGender <- read.csv(MDGenderFile, sep = " ", colClasses = c("numeric", "character", "numeric"))
 
+# RESTORE CODE IF API IS DOWN:
 # Read data for race distribution
-MDRaceFile <- 'MD-coronavirus-byrace.txt'
-MDRaceNCols <- 19
+#MDRaceFile <- 'MD-coronavirus-byrace.txt'
+#MDRaceNCols <- 19
 # Space-delimited file with fields:
 # Date: date in YearMonthDate format
 # AfricanAmerican: number of cases in African-Americans
@@ -83,7 +84,7 @@ MDRaceNCols <- 19
 # Other: number of cases in other races
 # DataNotAvailable: number of cases for which data is not available
 # D...: number of deaths for that community
-datRace <- read.csv(MDRaceFile, sep = " ", colClasses = c(rep("numeric", MDRaceNCols)))
+#datRace <- read.csv(MDRaceFile, sep = " ", colClasses = c(rep("numeric", MDRaceNCols)))
 
 # Read data for the "Congregate Facility Settings" (nursing home and similar)
 MDNursingFile <- 'MD-coronavirus-nursing.txt'
@@ -106,7 +107,7 @@ plotDailyTestsOverTime(datCases)
 plotCurrentlySickPatients(datCases, logScale = FALSE)
 plotNewSickPatients(datCases)
 plotPositiveTestPc(datCases, lastDateCases, lastMaxPositiveCases)
-#plotDeathsOverTime(datCases) # again until the API is updated
+#plotDeathsOverTime(datCases) # restore if the API is down
 plotNursingCasesOverTime(datNursing, logScale = TRUE)
 plotPcNursingCases(datCases, datNursing)
 
@@ -119,6 +120,6 @@ plotAgeGroupsSection(datAge)
 
 plotGenderSection(datGender)
 
-plotRaceCasesOverTime(datRace)
-plotRaceDeathsOverTime(datRace)
-plotRaceSection(datRace)
+#plotRaceCasesOverTime(datRace) # restore if the API is down
+#plotRaceDeathsOverTime(datRace) # restore if the API is down
+#plotRaceSection(datRace) # restore if the API is down

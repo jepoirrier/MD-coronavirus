@@ -603,7 +603,7 @@ plotGenderSection <- function(dat) {
 }
 
 #' Plot the trend in number of cases by race over time
-#' needs data from byrace.txt
+#' needs data from byrace.txt -- NOT USED UNLESS API IS DOWN
 plotRaceCasesOverTime <- function(dat) {
   
   limitCasesCol <- 7 # just cases, no deaths, no probable deaths --> TODO
@@ -630,10 +630,10 @@ plotRaceCasesOverTime <- function(dat) {
   ggsave("figures/MD-COVID19-race-cases.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
   
   return(p)
-}
+} 
 
 #' Plot the trend in number of deaths by race over time
-#' needs data from byrace.txt
+#' needs data from byrace.txt -- NOT USED UNLESS API IS DOWN
 plotRaceDeathsOverTime <- function(dat) {
   
   cols2keep <- c(1, 8:13)
@@ -663,7 +663,7 @@ plotRaceDeathsOverTime <- function(dat) {
 }
 
 #' Plot the latest sectional data for # cases by race
-#' needs data from byrace.txt
+#' needs data from byrace.txt -- NOT USED UNLESS API IS DOWN
 plotRaceSection <- function(dat) {
   
   limitCasesCol <- 7
