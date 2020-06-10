@@ -23,7 +23,7 @@ plotWidth <- 12
 plotHeight <- 7 # for single graph: 6 (= 2 times 3) + 1
 plotHeightLong <- 10 # for multiple graphs: 9 (= 3 times 3) + 1
 Nbreaks <- 10 # default number of breaks for trend decomposition
-preventMultipleDownload <- FALSE
+preventMultipleDownload <- TRUE
 
 # Read an .ini file with point data in it
 iniFile <- "../data-other-sources/pointData.ini"
@@ -49,6 +49,7 @@ if(file.exists(DCFile)) {
 
 # Import the data
 datDC <- read.csv(DCFile, sep = ",", colClasses = c("integer", "Date", "integer"))
+print(paste("Latest data point in DCFile:", max(datDC$DATE)))
 
 # Clean the data
 # we don't need column OBJECTID
@@ -88,6 +89,7 @@ if(file.exists(DCDFile)) {
 
 # Import the data
 datDCD <- read.csv(DCDFile, sep = ",", colClasses = c("integer", "Date", "integer"))
+print(paste("Latest data point in DCDFile:", max(datDCD$DATE)))
 
 # Clean the data
 # we don't need column OBJECTID
