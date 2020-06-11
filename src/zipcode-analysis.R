@@ -12,6 +12,8 @@ library(gghighlight)
 library(ggplot2)
 library(tidyr)
 
+print("Entering zip-analysis.R")
+
 plotWidth <- 12
 plotHeight <- 7 # for single graph: 6 (= 2 times 3) + 1
 plotHeightLong <- 10 # for multiple graphs: 9 (= 3 times 3) + 1

@@ -19,11 +19,13 @@ library(ini)
 library(scales) # for x-axis ticks
 library(tidyr)
 
+print("Entering deaths-confirmed.R")
+
 plotWidth <- 12
 plotHeight <- 7 # for single graph: 6 (= 2 times 3) + 1
 plotHeightLong <- 10 # for multiple graphs: 9 (= 3 times 3) + 1
 Nbreaks <- 10 # default number of breaks for trend decomposition
-preventMultipleDownload <- TRUE
+preventMultipleDownload <- FALSE
 
 # Read an .ini file with point data in it
 iniFile <- "../data-other-sources/pointData.ini"
