@@ -56,6 +56,7 @@ cols2pivot <- Zipcols[2:length(Zipcols)] # we don't need ZIPCODE
 dt <- pivot_longer(data = datZip, cols = cols2pivot, names_to = "Date", values_to = "Cases", values_drop_na = TRUE)
 dt$Date <- as.character(dt$Date)
 dt$Date <- as.Date(sprintf("%s",dt$Date), "%m_%d_%y")
+print(paste("Latest data point in ZipFile:", max(dt$Date)))
 
 # CHART ALL ZIPs over time
 
