@@ -53,7 +53,7 @@ if(file.exists(CFCFile)) {
 # Import the case data
 datCFC <- read.csv(CFCFile, sep = ",", colClasses = c("character", "integer", "integer", "integer", "integer", "integer", "integer", "integer"))
 datCFC$DATE <- as.Date(sprintf("%s", datCFC$DATE), "%m/%d/%y")
-print(paste("Latest data point in RCFile:", max(datCFC$DATE)))
+print(paste("Latest data point in CFCFile:", max(datCFC$DATE)))
 
 # Clean the data
 # we don't need column OBJECTID
@@ -279,6 +279,8 @@ z <- ggplot(dtRel, aes(x = Date, y = Cases, group = Category)) +
 z
 ggsave("../figures/cfs-SterlingCare.png", plot = z, device = "png", width = plotWidth, height = plotHeight, units = "in")
 # End of test
+
+stop("Stop here! Work in progress!")
 
 ### ARRIVED HERE but I need to go to sleep
 ###
