@@ -247,6 +247,8 @@ print(paste("Latest data point in CFFile:", max(datCF$DATE)))
 # Clean the data
 # we don't need column OBJECTID
 datCF$OBJECTID <- NULL
+# we create unique facilities by grouping their facility name with their county
+datCF$FACILITY_NAME <- paste0(datCF$FACILITY_NAME, " (", datCF$COUNTY, ")")
 # we don't need the County here
 datCF$COUNTY <- NULL
 # rename headers
@@ -254,8 +256,8 @@ colnames(datCF) <- c("Date", "Facility", "Nursing Staff", "Nursing Residents", "
 
 # Small test on June 25: try a facility that initially reported then stopped reporting
 # This graph can be removed if needed, just for illustration purpose (and blog post)
-tmp <- datCF[datCF$Facility == "Cumberland Healthcare Center", ] # 1st in dataset but reported until the end
-tmp <- datCF[datCF$Facility == "Sterling Care Frostburg Village", ] # 2nd in dataset and stopped reporting on 6/10
+tmp <- datCF[datCF$Facility == "Cumberland Healthcare Center (Allegany)", ] # 1st in dataset but reported until the end
+tmp <- datCF[datCF$Facility == "Sterling Care Frostburg Village (Allegany)", ] # 2nd in dataset and stopped reporting on 6/10
 tmp$`State/Local Staff` <- NULL
 tmp$`State/Local Patients` <- NULL
 tmp$`State/Local Inmates` <- NULL
@@ -272,15 +274,70 @@ z <- ggplot(dtRel, aes(x = Date, y = Cases, group = Category)) +
   geom_line(aes(color = Category), lwd = 1) +
   geom_point(aes(color = Category, shape = Category)) +
   theme_linedraw() +
-  labs(title = "Evolution of COVID-19 cases in Sterling Care Frostburg Village",
+  labs(title = "Evolution of COVID-19 cases in Sterling Care Frostburg Village (Allegany)",
        x = "Date",
        y = "Cumulative cases",
        caption = paste("Graph created to illustrate the removal of facilities in MD data when reporting stop for > 14 days\nExplanations at https://jepoirrier.org/mdcovid19/ ; data from https://coronavirus.maryland.gov/ ; last data update:", format(max(datCF$Date), "%b %d, %Y")))
 z
 ggsave("../figures/cfs-SterlingCare.png", plot = z, device = "png", width = plotWidth, height = plotHeight, units = "in")
 # End of test
+# TODO redo the test once I get the right algorithm
 
 stop("Stop here! Work in progress!")
+
+#Create a final DF, empty
+datCFFinal <- data.frame(a = as.Date(x = integer(0), origin = "1970-01-01"), b = character(0), c = integer(0), d = integer(0), e = integer(0), f = integer(0), g = integer(0), h = integer(0))
+colnames(datCFFinal) <- c("Date", "Facility", "Nursing Staff", "Nursing Residents", "State/Local Staff", "State/Local Patients", "State/Local Inmates", "State/Local Youth")
+
+#Create a DF for current max value
+datCFMax <- data.frame(a = as.Date(x = integer(0), origin = "1970-01-01"), b = character(0), c = integer(0), d = integer(0), e = integer(0), f = integer(0), g = integer(0), h = integer(0))
+colnames(datCFMax) <- c("Date", "Facility", "Nursing Staff", "Nursing Residents", "State/Local Staff", "State/Local Patients", "State/Local Inmates", "State/Local Youth")
+
+#List all unique date
+uniqueDates <- sort(unique(datCF$Date))
+#List all unique facility
+uniqueFacilities <- sort(unique(datCF$Facility))
+
+library(iterators)
+library(itertools)
+
+itDate <- ihasNext(uniqueDates)
+itFacility <- ihasNext(uniqueFacilities)
+while(hasNext(itDate)) {
+  currentDate <- nextElem(itDate)
+  print(currentDate)
+  while(hasNext(itFacility)) {
+    currentFacility <- nextElem(itFacility)
+    if((datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`Nursing Staff` >= 0) !
+       is.na(datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`Nursing Staff`)) {
+         newrow <- c(currentDate, currentFacility,
+                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`Nursing Staff`,
+                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`Nursing Residents`,
+                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Staff`,
+                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Patients`,
+                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Inmates`,
+                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Youth`)
+         datCFFinal <- rbind(datCFFinal, newrow)
+       }
+  }
+}
+For each date: {
+  For each facility: {
+    
+    If date + facility = value: {
+      1. write date, facility, values to resulting DF
+      2. write them also to max DF (but check if not lower value than in max DF in case MDH messed with counts)
+      Else (case date + facility = no value): {
+        If max DF has value for date+facility:
+          Then write these date+facility+max values (= the facility dropped from counts and needs to be reinstated)
+        (Else do nothing: facility had never any case yet)
+      } end else
+    } end if
+    
+    ) end each facility
+  } end each date
+  
+  Now we can sum all cases by date
 
 ### ARRIVED HERE but I need to go to sleep
 ###
