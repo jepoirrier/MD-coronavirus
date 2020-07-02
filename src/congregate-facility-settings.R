@@ -285,13 +285,31 @@ ggsave("../figures/cfs-SterlingCare.png", plot = z, device = "png", width = plot
 
 stop("Stop here! Work in progress!")
 
-#Create a final DF, empty
+# Woke up during the night to this algorithm:
+# For each date: {
+# For each facility: {
+#   
+#   If date + facility = value: {
+#     1. write date, facility, values to resulting DF
+#     2. write them also to max DF (but check if not lower value than in max DF in case MDH messed with counts)
+#     Else (case date + facility = no value): {
+#       If max DF has value for date+facility:
+#         Then write these date+facility+max values (= the facility dropped from counts and needs to be reinstated)
+#       (Else do nothing: facility had never any case yet)
+#     } end else
+#       
+#       ) end each facility
+#   } end each date
+#   
+#   Now we can sum all cases by date
+
+#Create a final, resulting DF, empty
 datCFFinal <- data.frame(a = as.Date(x = integer(0), origin = "1970-01-01"), b = character(0), c = integer(0), d = integer(0), e = integer(0), f = integer(0), g = integer(0), h = integer(0))
 colnames(datCFFinal) <- c("Date", "Facility", "Nursing Staff", "Nursing Residents", "State/Local Staff", "State/Local Patients", "State/Local Inmates", "State/Local Youth")
 
-#Create a DF for current max value
-datCFMax <- data.frame(a = as.Date(x = integer(0), origin = "1970-01-01"), b = character(0), c = integer(0), d = integer(0), e = integer(0), f = integer(0), g = integer(0), h = integer(0))
-colnames(datCFMax) <- c("Date", "Facility", "Nursing Staff", "Nursing Residents", "State/Local Staff", "State/Local Patients", "State/Local Inmates", "State/Local Youth")
+#Create a DF for current max value - we don't care of the date
+datCFMax <- data.frame(b = character(0), c = integer(0), d = integer(0), e = integer(0), f = integer(0), g = integer(0), h = integer(0))
+colnames(datCFMax) <- c("Facility", "Nursing Staff", "Nursing Residents", "State/Local Staff", "State/Local Patients", "State/Local Inmates", "State/Local Youth")
 
 #List all unique date
 uniqueDates <- sort(unique(datCF$Date))
@@ -303,13 +321,21 @@ library(itertools)
 
 itDate <- ihasNext(uniqueDates)
 itFacility <- ihasNext(uniqueFacilities)
+
+# for each date:
 while(hasNext(itDate)) {
   currentDate <- nextElem(itDate)
   print(currentDate)
+  
+  # for each facility:
   while(hasNext(itFacility)) {
     currentFacility <- nextElem(itFacility)
+    
+    # if date + facility has a value:
     if((datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`Nursing Staff` >= 0) !
        is.na(datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`Nursing Staff`)) {
+    
+      # write date, facility and values to the resulting DF
          newrow <- c(currentDate, currentFacility,
                      datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`Nursing Staff`,
                      datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`Nursing Residents`,
@@ -318,26 +344,31 @@ while(hasNext(itDate)) {
                      datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Inmates`,
                      datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Youth`)
          datCFFinal <- rbind(datCFFinal, newrow)
+         # and also write them to the max DF (TODO check if not lower value than in max DF in case MDH messed with counts)
+         newrow2 <- c(currentFacility,
+                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`Nursing Staff`,
+                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`Nursing Residents`,
+                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Staff`,
+                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Patients`,
+                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Inmates`,
+                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Youth`)
+         datCFMax <- rbind(datCFMax, newrow2)
+    } else {
+      # here: case date + facility = no value (integer(0))
+      
+      # If max DF has value for facility:
+      
+      #         Then write these date+facility+max values (= the facility dropped from counts and needs to be reinstated)
+      #       (Else do nothing: facility had never any case yet)
+         
        }
-  }
-}
-For each date: {
-  For each facility: {
-    
-    If date + facility = value: {
-      1. write date, facility, values to resulting DF
-      2. write them also to max DF (but check if not lower value than in max DF in case MDH messed with counts)
-      Else (case date + facility = no value): {
-        If max DF has value for date+facility:
-          Then write these date+facility+max values (= the facility dropped from counts and needs to be reinstated)
-        (Else do nothing: facility had never any case yet)
-      } end else
-    } end if
-    
-    ) end each facility
-  } end each date
-  
-  Now we can sum all cases by date
+  } # end each facility
+} # end each date
+
+# now we can sum all cases by date
+# NPO check with Sterling Care
+
+# PROBABLY WRONG BELOW ...
 
 ### ARRIVED HERE but I need to go to sleep
 ###
