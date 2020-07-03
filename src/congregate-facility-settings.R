@@ -52,6 +52,7 @@ if(file.exists(CFCFile)) {
 
 # Import the case data
 datCFC <- read.csv(CFCFile, sep = ",", colClasses = c("character", "integer", "integer", "integer", "integer", "integer", "integer", "integer"))
+datCFC <- datCFC[!is.na(datCFC$Staff._Nursing._Assisted_Living._Group_Homes_Affected_Facilities), ] # fixing additional NAs rows that appeared on July 2nd
 datCFC$DATE <- as.Date(sprintf("%s", datCFC$DATE), "%m/%d/%y")
 print(paste("Latest data point in CFCFile:", max(datCFC$DATE)))
 
@@ -241,6 +242,7 @@ if(file.exists(CFFile)) {
 
 # Import the State total case data
 datCF <- read.csv(CFFile, sep = ",", na.strings = "N/A", colClasses = c("character", "character", "character", "integer", "integer", "integer", "integer", "integer", "integer", "integer"))
+datCF$X <- NULL # fixing additional 'X' column that appeared on July 2nd
 datCF$DATE <- as.Date(sprintf("%s", datCF$DATE), "%m/%d/%y")
 print(paste("Latest data point in CFFile:", max(datCF$DATE)))
 
