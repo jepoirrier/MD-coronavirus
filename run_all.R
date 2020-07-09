@@ -10,7 +10,7 @@ source("MD-coronavirus-Stage1.R")
 
 # NEW VERSION of code (API data)
 setwd("src/")
-source("zipcode-analysis.R")
 source("deaths-confirmed.R")
 source("races-analysis.R")
+source("zipcode-analysis.R")
 source("congregate-facility-settings.R")
