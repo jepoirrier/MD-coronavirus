@@ -121,7 +121,7 @@ p <- ggplot(dtAC3, aes(x = AgeGroups, y = Cases)) +
        x = "Age groups (years)",
        y = "All cases",
        caption = paste("Explanations at https://jepoirrier.org/mdcovid19/ ; data from https://coronavirus.maryland.gov/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
-p
+#p
 ggsave("../figures/age-section.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
 
 # Graph C1 - cases evolution of each age category relative to its own population
@@ -168,9 +168,8 @@ p <- ggplot(dtX, aes(x = Date, y = Cases, group = Ages)) +
   theme_linedraw() +
   labs(title = "Evolution of COVID-19 cases relative by age in Maryland, USA (2020)",
        x = "Date",
-       y = "Cumulative cases / 100,000 pop",
-       caption = paste("Explanations at https://jepoirrier.org/mdcovid19/ ; data from https://coronavirus.maryland.gov/ ; last data update:", format(max(datAC$Date), "%b %d, %Y")))
-p
+       y = "Cumulative cases / 100,000 pop")
+#p
 
 # Graph C2 - cases evolution of each age category (contribution to 100% - not relative ot pop)
 
@@ -236,7 +235,7 @@ q <- ggplot(dtTT, aes(x = Date, y = Percentage, fill = Ages)) +
        x = "Date",
        y = "Percentage of cases by age category",
        caption = paste("Explanations at https://jepoirrier.org/mdcovid19/ ; data from https://coronavirus.maryland.gov/ ; last data update:", format(max(datAC$Date), "%b %d, %Y")))
-q
+#q
 
 #as.Date(as.Date(sprintf("%d", max(datX$Date))
 #, scientific = FALSE, big.mark = ","
@@ -246,7 +245,7 @@ q
 
 r <- ggarrange(p, q, heights = c(1, 1), 
                ncol = 1, nrow = 2, align = "v")
-r
+#r
 ggsave("../figures/age-cases-relative.png", plot = r, device = "png", width = plotWidth, height = plotHeightLong, units = "in")
 
 ### Deaths now ...
@@ -267,4 +266,4 @@ ggsave("../figures/age-cases-relative.png", plot = r, device = "png", width = pl
 
 
 # Get start / end dates to define Nbreaks
-Nbreaks <- floor((as.integer(max(dtDC$Date)) - as.integer(min(dtDC$Date))) / 5)
+#Nbreaks <- floor((as.integer(max(dtDC$Date)) - as.integer(min(dtDC$Date))) / 5)
