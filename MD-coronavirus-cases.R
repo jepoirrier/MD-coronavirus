@@ -55,14 +55,14 @@ lastDateCountyDeaths <- as.Date(sprintf("%d",max(datCountyDeaths$Date)), "%y%m%d
 lastMaxCountyDeaths = max(datCountyDeaths$PrinceGeorges) # TODO manually find the county with max deaths - TODO change this behavior
 
 # Read the data from the age groups: cases (new version since March 27) & deaths (included since April 9)
-MDAgeFile <- 'MD-coronavirus-byage3.txt' # Switch for 3rd version of age groups presented by MDH
-MDAgeNCols <- 4
+#MDAgeFile <- 'MD-coronavirus-byage3.txt' # Switch for 3rd version of age groups presented by MDH
+#MDAgeNCols <- 4
 # Space-delimited file with fields:
 # Date: date in YearMonthDate format
 # AgeGroup: age group of cases (0-9, 10-19, 20-20, 30-39, 40-49, 50-59, 60-69, 70-79, 80+)
 # CountType: either 'PosTests" (# positive tests) or 'Deaths' (# deaths)
 # Count: the count .. 
-datAge <- read.csv(MDAgeFile, sep = " ", colClasses = c("numeric", "character", "character", "numeric"))
+#datAge <- read.csv(MDAgeFile, sep = " ", colClasses = c("numeric", "character", "character", "numeric"))
 
 # Read data by gender
 MDGenderFile <- 'MD-coronavirus-bygender.txt'
@@ -114,9 +114,9 @@ plotPcNursingCases(datCases, datNursing)
 plotCountyCasesOverTime(datCounty)
 plotCountyDeathsOverTime(datCountyDeaths)
 
-plotAgeGroupsCases(datAge)
-plotAgeGroupsDeaths(datAge)
-plotAgeGroupsSection(datAge)
+#plotAgeGroupsCases(datAge)
+#plotAgeGroupsDeaths(datAge)
+#plotAgeGroupsSection(datAge)
 
 plotGenderSection(datGender)
 
