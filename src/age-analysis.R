@@ -66,6 +66,8 @@ cols2pivot <- colnames(datAC)
 cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
 
 dtAC <- pivot_longer(data = datAC, cols = cols2pivot, names_to = "AgeGroups", values_to = "Cases", values_drop_na = TRUE)
+# Specify the order I want (younger people at bottom, increase with age)
+dtAC$AgeGroups <- factor(dtAC$AgeGroups , levels = c("80+", "70-79", "60-69", "50-59", "40-49", "30-39", "20-29", "10-19", "0-9"))
 
 p <- ggplot(dtAC, aes(x = Date, y = Cases, group = AgeGroups)) +
   geom_line(aes(color = AgeGroups), lwd = 1) +
@@ -88,6 +90,8 @@ cols2pivot <- colnames(datAC2)
 cols2pivot <- cols2pivot[1:length(cols2pivot)-1] # we don't need "Date" (but here it's at the end, thanks to cbind)
 
 dtAC2 <- pivot_longer(data = datAC2, cols = cols2pivot, names_to = "AgeGroups", values_to = "NewCases", values_drop_na = TRUE)
+# Specify the order I want (younger people at bottom, increase with age)
+dtAC2$AgeGroups <- factor(dtAC2$AgeGroups , levels = c("80+", "70-79", "60-69", "50-59", "40-49", "30-39", "20-29", "10-19", "0-9"))
 
 q <- ggplot(dtAC2, aes(x = Date, y = NewCases, group = AgeGroups)) +
   geom_line(aes(color = AgeGroups), lwd = 1) +
@@ -144,6 +148,8 @@ cols2pivot <- colnames(datX)
 cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
 
 dtX <- pivot_longer(data = datX, cols = cols2pivot, names_to = "Ages", values_to = "Cases", values_drop_na = TRUE)
+# Specify the order I want (younger people at bottom, increase with age)
+dtX$Ages <- factor(dtX$Ages , levels = c("80+", "70-79", "60-69", "50-59", "40-49", "30-39", "20-29", "10-19", "0-9"))
 
 p <- ggplot(dtX, aes(x = Date, y = Cases, group = Ages)) +
   geom_line(aes(color = Ages), lwd = 1) +
@@ -272,6 +278,8 @@ cols2pivot <- colnames(datAD)
 cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
 
 dtAD <- pivot_longer(data = datAD, cols = cols2pivot, names_to = "AgeGroups", values_to = "Deaths", values_drop_na = TRUE)
+# Specify the order I want (younger people at bottom, increase with age)
+dtAD$AgeGroups <- factor(dtAD$AgeGroups , levels = c("80+", "70-79", "60-69", "50-59", "40-49", "30-39", "20-29", "10-19", "0-9"))
 
 p <- ggplot(dtAD, aes(x = Date, y = Deaths, group = AgeGroups)) +
   geom_line(aes(color = AgeGroups), lwd = 1) +
@@ -294,6 +302,8 @@ cols2pivot <- colnames(datAD2)
 cols2pivot <- cols2pivot[1:length(cols2pivot)-1] # we don't need "Date" (but here it's at the end, thanks to cbind)
 
 dtAD2 <- pivot_longer(data = datAD2, cols = cols2pivot, names_to = "AgeGroups", values_to = "NewDeaths", values_drop_na = TRUE)
+# Specify the order I want (younger people at bottom, increase with age)
+dtAD2$AgeGroups <- factor(dtAD2$AgeGroups , levels = c("80+", "70-79", "60-69", "50-59", "40-49", "30-39", "20-29", "10-19", "0-9"))
 
 q <- ggplot(dtAD2, aes(x = Date, y = NewDeaths, group = AgeGroups)) +
   geom_line(aes(color = AgeGroups), lwd = 1) +
@@ -321,6 +331,8 @@ cols2pivot <- colnames(datAC3)
 cols2pivot <- cols2pivot[2:length(cols2pivot)]
 
 dtAC3 <- pivot_longer(data = datAC3, cols = cols2pivot, names_to = "AgeGroups", values_to = "Cases", values_drop_na = TRUE)
+# Specify the order I want (younger people at bottom, increase with age)
+dtAC3$AgeGroups <- factor(dtAC3$AgeGroups , levels = c("80+", "70-79", "60-69", "50-59", "40-49", "30-39", "20-29", "10-19", "0-9"))
 
 p <- ggplot(dtAC3, aes(x = AgeGroups, y = Cases)) +
   geom_bar(stat = "identity", position = position_dodge()) +
@@ -340,6 +352,8 @@ cols2pivot <- colnames(datAD3)
 cols2pivot <- cols2pivot[2:length(cols2pivot)]
 
 dtAD3 <- pivot_longer(data = datAD3, cols = cols2pivot, names_to = "AgeGroups", values_to = "Deaths", values_drop_na = TRUE)
+# Specify the order I want (younger people at bottom, increase with age)
+dtAD3$AgeGroups <- factor(dtAD3$AgeGroups , levels = c("80+", "70-79", "60-69", "50-59", "40-49", "30-39", "20-29", "10-19", "0-9"))
 
 q <- ggplot(dtAD3, aes(x = AgeGroups, y = Deaths)) +
   geom_bar(stat = "identity", position = position_dodge()) +
@@ -387,6 +401,8 @@ cols2pivot <- colnames(datX)
 cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
 
 dtX <- pivot_longer(data = datX, cols = cols2pivot, names_to = "Ages", values_to = "Deaths", values_drop_na = TRUE)
+# Specify the order I want (younger people at bottom, increase with age)
+dtX$Ages <- factor(dtX$Ages , levels = c("80+", "70-79", "60-69", "50-59", "40-49", "30-39", "20-29", "10-19", "0-9"))
 
 p <- ggplot(dtX, aes(x = Date, y = Deaths, group = Ages)) +
   geom_line(aes(color = Ages), lwd = 1) +
