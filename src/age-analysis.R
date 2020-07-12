@@ -331,8 +331,8 @@ cols2pivot <- colnames(datAC3)
 cols2pivot <- cols2pivot[2:length(cols2pivot)]
 
 dtAC3 <- pivot_longer(data = datAC3, cols = cols2pivot, names_to = "AgeGroups", values_to = "Cases", values_drop_na = TRUE)
-# Specify the order I want (younger people at bottom, increase with age)
-dtAC3$AgeGroups <- factor(dtAC3$AgeGroups , levels = c("80+", "70-79", "60-69", "50-59", "40-49", "30-39", "20-29", "10-19", "0-9"))
+dtAC3$AgeGroups <- factor(dtAC3$AgeGroups , levels = c("0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+"))
+
 
 p <- ggplot(dtAC3, aes(x = AgeGroups, y = Cases)) +
   geom_bar(stat = "identity", position = position_dodge()) +
@@ -352,8 +352,7 @@ cols2pivot <- colnames(datAD3)
 cols2pivot <- cols2pivot[2:length(cols2pivot)]
 
 dtAD3 <- pivot_longer(data = datAD3, cols = cols2pivot, names_to = "AgeGroups", values_to = "Deaths", values_drop_na = TRUE)
-# Specify the order I want (younger people at bottom, increase with age)
-dtAD3$AgeGroups <- factor(dtAD3$AgeGroups , levels = c("80+", "70-79", "60-69", "50-59", "40-49", "30-39", "20-29", "10-19", "0-9"))
+dtAD3$AgeGroups <- factor(dtAD3$AgeGroups , levels = c("0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+"))
 
 q <- ggplot(dtAD3, aes(x = AgeGroups, y = Deaths)) +
   geom_bar(stat = "identity", position = position_dodge()) +
