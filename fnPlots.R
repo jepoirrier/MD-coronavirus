@@ -580,29 +580,29 @@ plotAgeGroupsDeaths <- function(dat) {
 
 #' Plot the latest sectional data for # cases by gender
 #' needs data from bygender.txt
-plotGenderSection <- function(dat) {
-  
-  dat$Date <- as.Date(sprintf("%d",dat$Date), "%y%m%d")
-  maxDate = max(dat$Date)
-  
-  dat$Gender[dat$Gender == "DFemale"] <- "Female death"
-  dat$Gender[dat$Gender == "DMale"] <- "Male death"
-  dat$Gender[dat$Gender == "PDFemale"] <- "Female probable death"
-  dat$Gender[dat$Gender == "PDMale"] <- "Male probable death"
-  
-  p <- ggplot(dat[dat$Date == maxDate,], aes(x = Gender, y = Counts)) +
-    geom_bar(stat="identity") +
-    theme_linedraw() +
-    geom_text(aes(label=format(Counts, scientific = FALSE, big.mark = ",")), vjust=1.6, color="white", size=3.5) +
-    labs(title = "Gender distribution of all Coronavirus cases in Maryland, USA (2020)",
-         x = "Gender",
-         y = "Cumulative count",
-         caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
-  
-  ggsave("figures/MD-COVID19-gender-grp.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
-  
-  return(p)
-}
+# plotGenderSection <- function(dat) {
+#   
+#   dat$Date <- as.Date(sprintf("%d",dat$Date), "%y%m%d")
+#   maxDate = max(dat$Date)
+#   
+#   dat$Gender[dat$Gender == "DFemale"] <- "Female death"
+#   dat$Gender[dat$Gender == "DMale"] <- "Male death"
+#   dat$Gender[dat$Gender == "PDFemale"] <- "Female probable death"
+#   dat$Gender[dat$Gender == "PDMale"] <- "Male probable death"
+#   
+#   p <- ggplot(dat[dat$Date == maxDate,], aes(x = Gender, y = Counts)) +
+#     geom_bar(stat="identity") +
+#     theme_linedraw() +
+#     geom_text(aes(label=format(Counts, scientific = FALSE, big.mark = ",")), vjust=1.6, color="white", size=3.5) +
+#     labs(title = "Gender distribution of all Coronavirus cases in Maryland, USA (2020)",
+#          x = "Gender",
+#          y = "Cumulative count",
+#          caption = paste("Data from https://coronavirus.maryland.gov/ ; explanations at https://jepoirrier.org/mdcovid19/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
+#   
+#   ggsave("figures/MD-COVID19-gender-grp.png", plot = p, device = "png", width = plotWidth, height = plotHeight, units = "in")
+#   
+#   return(p)
+# }
 
 #' Plot the trend in number of cases by race over time
 #' needs data from byrace.txt -- NOT USED UNLESS API IS DOWN

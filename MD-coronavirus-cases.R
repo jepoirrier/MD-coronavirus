@@ -65,12 +65,12 @@ lastMaxCountyDeaths = max(datCountyDeaths$PrinceGeorges) # TODO manually find th
 #datAge <- read.csv(MDAgeFile, sep = " ", colClasses = c("numeric", "character", "character", "numeric"))
 
 # Read data by gender
-MDGenderFile <- 'MD-coronavirus-bygender.txt'
+#MDGenderFile <- 'MD-coronavirus-bygender.txt'
 # Space-delimited file with fields:
 # Date: date in YearMonthDate format
 # Gender: either Male, Female, DMale, DFemale, PDMale or PDFemale
 # with no prefix = cases, prefix "D" = cases deaths (confirmed), prefix "PD" = probable deaths
-datGender <- read.csv(MDGenderFile, sep = " ", colClasses = c("numeric", "character", "numeric"))
+#datGender <- read.csv(MDGenderFile, sep = " ", colClasses = c("numeric", "character", "numeric"))
 
 # RESTORE CODE IF API IS DOWN:
 # Read data for race distribution
@@ -118,7 +118,7 @@ plotCountyDeathsOverTime(datCountyDeaths)
 #plotAgeGroupsDeaths(datAge)
 #plotAgeGroupsSection(datAge)
 
-plotGenderSection(datGender)
+#plotGenderSection(datGender)
 
 #plotRaceCasesOverTime(datRace) # restore if the API is down
 #plotRaceDeathsOverTime(datRace) # restore if the API is down
