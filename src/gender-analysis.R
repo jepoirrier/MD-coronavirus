@@ -163,7 +163,7 @@ cols2pivot <- colnames(datTT)
 # removing raw numbers
 datTT[,(2:4)] <- NULL
 # renaming headers
-colnames(datTT) <- cols2pivot[1:3]
+colnames(datTT) <- c("Date", "Female", "Male")
 # small digression: keeping the last row for the annotations
 datTTlast <- tail(datTT, n = 1)
 # pivoting (back to the flow)
@@ -386,7 +386,7 @@ cols2pivot <- colnames(datTT)
 # removing raw numbers
 datTT[,(2:4)] <- NULL
 # renaming headers
-colnames(datTT) <- cols2pivot[1:3]
+colnames(datTT) <- c("Date", "Female", "Male")
 # small digression: keeping the last row for the annotations
 datTTlast <- tail(datTT, n = 1)
 # pivoting (back to the flow)
