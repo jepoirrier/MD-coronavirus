@@ -117,8 +117,8 @@ ggsave("../figures/gender-cases.png", plot = r, device = "png", width = plotWidt
 # Get gender counts from the MD State (arrange from the ini file -> dataframe)
 
 genderTotal <- data.frame("Date" = as.double(1),
-                       "Female" = as.double(pointData[["MDPopulation"]][["Female"]]),
-                       "Male" = as.double(pointData[["MDPopulation"]][["Male"]]))
+                       "Male" = as.double(pointData[["MDPopulation"]][["Male"]]),
+                       "Female" = as.double(pointData[["MDPopulation"]][["Female"]]))
 
 dateGenderDataUpdate <- pointData$MDPopulation$DateAccessed
 
