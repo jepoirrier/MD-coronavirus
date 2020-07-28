@@ -215,6 +215,10 @@ s <- ggplot(dfCp, aes(x = Date, y = `Percent Positivity`, group = Type)) +
            x = dfClast$Date - 30,
            y = 30,
            size = 3, fontface = "italic") +
+  # Annotation for broadening tests
+  annotate("text", label = "Testing broadening\nMay 19, 2020",
+           x = as.Date("200519", "%y%m%d"), y = 33,
+           size = 4, fontface = "italic") +
   labs(title = "Evolution of Coronavirus percentage of positivity in Maryland, USA (2020)",
        x = "Date",
        y = "% Positivity",
