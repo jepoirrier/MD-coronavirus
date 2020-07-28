@@ -11,6 +11,7 @@ source("MD-coronavirus-Stage1.R")
 # NEW VERSION of code (API data)
 # Note: pay attention to last data in data sets. Sometimes, re-downloading give the latest data
 setwd("src/")
+source("cases-analysis.R")
 source("deaths-confirmed.R")
 source("age-analysis.R")
 source("gender-analysis.R") # sometimes needs to be re-run a 2nd time to get today's data

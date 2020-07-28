@@ -203,7 +203,7 @@ cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
 dfCp <- pivot_longer(data = dfC, cols = cols2pivot, names_to = "Type", values_to = "Percent Positivity", values_drop_na = TRUE)
 
 s <- ggplot(dfCp, aes(x = Date, y = `Percent Positivity`, group = Type)) +
-  geom_line(aes(color = Type)) +
+  geom_line(aes(color = Type), lwd = 1) +
   #geom_point(aes(color = Tests, shape = `Reporting Type`)) +
   theme_linedraw() +
   theme(legend.position = "bottom") + 
