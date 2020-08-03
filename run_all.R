@@ -17,4 +17,5 @@ source("age-analysis.R")
 source("gender-analysis.R") # sometimes needs to be re-run a 2nd time to get today's data
 source("races-analysis.R")
 source("zipcode-analysis.R")
+source("contacttracing-analysis.R")
 source("congregate-facility-settings.R")
