@@ -240,10 +240,10 @@ dtCO2 <- pivot_longer(data = datCO2, cols = cols2pivot, names_to = "Type", value
 s <- ggplot(dtCO2, aes(x = WeekEnd, y = N, fill = Type)) +
   geom_bar(stat = "identity", position = position_dodge()) +
   annotate("text", label = paste("Latest data:", datCO2last$WeekEnd, "\n",
-                                 "Average", format(round(datCO2last$`Average contacts per case`, 0), nsmall = 0), "contacts given per case\n",
-                                 "Average", format(round(datCO2last$`Average contacts interviewed per case`, 0), nsmall = 0), "contacts interviewed per case"),
+                                 "Average", format(round(datCO2last$`Average contacts per case`, 2), nsmall = 2), "contacts given per case\n",
+                                 "Average", format(round(datCO2last$`Average contacts interviewed per case`, 2), nsmall = 2), "contacts interviewed per case"),
            x = datCO2last$WeekEnd - 7,
-           y = max(datCO2last$`Average contacts per case` + 15),
+           y = max(datCO2last$`Average contacts per case` + 1),
            size = 3, fontface = "italic") +
   labs(title = "# Contacts per COVID-19 cases who gave contacts in Maryland, USA (2020)",
        x = "Date (week end)",
