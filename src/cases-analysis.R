@@ -9,6 +9,10 @@
 #
 # MDCOVID19 TestingVolume
 # https://data.imap.maryland.gov/datasets/mdcovid19-testingvolume
+#
+# MDCOVID19 TotalNumberReleasedFromIsolation
+# https://data.imap.maryland.gov/datasets/mdcovid19-totalnumberreleasedfromisolation
+
 
 library(dplyr)
 library(gghighlight)
@@ -141,14 +145,6 @@ cols2pivot <- colnames(dfC)
 cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
 
 dfCp <- pivot_longer(data = dfC, cols = cols2pivot, names_to = "Tests", values_to = "Cumulative Count", values_drop_na = TRUE)
-# dfCp$`Reporting Type`[dfCp$Tests == "Reported Positive"] <- "ESSENCE"
-# dfCp$`Reporting Type`[dfCp$Tests == "Reported Negative"] <- "NEDSS"
-# dfCp$`Reporting Type`[dfCp$Tests == "Electronic Positive"] <- "Electronic"
-# dfCp$`Reporting Type`[dfCp$Tests == "Electronic Negative"] <- "Electronic"
-# dfCp$Result[dfCp$Tests == "Reported Positive"] <- "Positive"
-# dfCp$Result[dfCp$Tests == "Reported Negative"] <- "Negative"
-# dfCp$Result[dfCp$Tests == "Electronic Positive"] <- "Positive"
-# dfCp$Result[dfCp$Tests == "Electronic Negative"] <- "Negative"
 
 p <- ggplot(dfCp, aes(x = Date, y = `Cumulative Count`, group = Tests)) +
   {if(logScale) scale_y_log10()} +
@@ -164,15 +160,15 @@ p <- ggplot(dfCp, aes(x = Date, y = `Cumulative Count`, group = Tests)) +
 
 # Graph A2 - simply the daily positive cases
 
-dfC <- df[, c("Date", "DPositives", "EDPositives")] # recycling C
-colnames(dfC) <- c("Date", "Reported positive (ESSENCE)", "Electronic positive")
+dfD <- df[, c("Date", "DPositives", "EDPositives")]
+colnames(dfD) <- c("Date", "Reported positive (ESSENCE)", "Electronic positive")
 
-cols2pivot <- colnames(dfC)
+cols2pivot <- colnames(dfD)
 cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
 
-dfCp <- pivot_longer(data = dfC, cols = cols2pivot, names_to = "Type", values_to = "Daily Count", values_drop_na = TRUE)
+dfDp <- pivot_longer(data = dfD, cols = cols2pivot, names_to = "Type", values_to = "Daily Count", values_drop_na = TRUE)
 
-q <- ggplot(dfCp, aes(x = Date, y = `Daily Count`, group = Type)) +
+q <- ggplot(dfDp, aes(x = Date, y = `Daily Count`, group = Type)) +
   geom_line(aes(color = Type), lwd = 1) +
   geom_point(aes(color = Type, shape = Type)) +
   theme_linedraw() +
@@ -191,27 +187,26 @@ ggsave("../figures/cases.png", plot = r, device = "png", width = plotWidth, heig
 
 # Graph B - percentage positivity
 
-dfC <- df[, c("Date", "TPcPositive", "DPcPositive", "EDPcPositive", "EDPcPositiveAverage")] # recycling C
-colnames(dfC) <- c("Date", "Cumulative", "Daily reported (ESSENCE)", "Daily electronic", "5-day rolling average electronic")
+dfP <- df[, c("Date", "TPcPositive", "DPcPositive", "EDPcPositive", "EDPcPositiveAverage")]
+colnames(dfP) <- c("Date", "Cumulative", "Daily reported (ESSENCE)", "Daily electronic", "5-day rolling average electronic")
 
 # small digression: keeping the last row for the annotations
-dfClast <- tail(dfC, n = 1)
+dfPlast <- tail(dfP, n = 1)
 
-cols2pivot <- colnames(dfC)
+cols2pivot <- colnames(dfP)
 cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
 
-dfCp <- pivot_longer(data = dfC, cols = cols2pivot, names_to = "Type", values_to = "Percent Positivity", values_drop_na = TRUE)
+dfPp <- pivot_longer(data = dfP, cols = cols2pivot, names_to = "Type", values_to = "Percent Positivity", values_drop_na = TRUE)
 
-s <- ggplot(dfCp, aes(x = Date, y = `Percent Positivity`, group = Type)) +
+s <- ggplot(dfPp, aes(x = Date, y = `Percent Positivity`, group = Type)) +
   geom_line(aes(color = Type), lwd = 1) +
-  #geom_point(aes(color = Tests, shape = `Reporting Type`)) +
   theme_linedraw() +
   theme(legend.position = "bottom") + 
-  annotate("text", label = paste("Latest data:", dfClast$Date, "\n",
-                                 "% cumulative:", format(round(dfClast$Cumulative, 2), nsmall = 2), "%\n",
-                                 "% daily reported:", format(round(dfClast$`Daily reported (ESSENCE)`, 2), nsmall = 2), "%\n",
-                                 "% daily electr.:", format(round(dfClast$`Daily electronic`, 2), nsmall = 2), "%\n",
-                                 "% 5day av. electr.:", format(round(dfClast$`5-day rolling average electronic`, 2), nsmall = 2), "%\n"),
+  annotate("text", label = paste("Latest data:", dfPlast$Date, "\n",
+                                 "% cumulative:", format(round(dfPlast$Cumulative, 2), nsmall = 2), "%\n",
+                                 "% daily reported:", format(round(dfPlast$`Daily reported (ESSENCE)`, 2), nsmall = 2), "%\n",
+                                 "% daily electr.:", format(round(dfPlast$`Daily electronic`, 2), nsmall = 2), "%\n",
+                                 "% 5day av. electr.:", format(round(dfPlast$`5-day rolling average electronic`, 2), nsmall = 2), "%\n"),
            x = dfClast$Date - 30,
            y = 30,
            size = 3, fontface = "italic") +
@@ -229,3 +224,99 @@ s <- ggplot(dfCp, aes(x = Date, y = `Percent Positivity`, group = Type)) +
 #s
 ggsave("../figures/cases-pcpositive.png", plot = s, device = "png", width = plotWidth, height = plotHeight, units = "in")
 
+
+# Release from isolation is a special kind of data. I put it here because it relates more to cases than hospitalizations, in fact
+
+# cumulative total of individuals who tested positive for COVID-19 that have been reported each day by each local health department via the ESSENCE system as having been released from home isolation
+RIURL <- "https://opendata.arcgis.com/datasets/02cc59cfe5144cdc9844859615ecc412_0.csv"
+RIFile <- "../data/cases-isolation-released.csv"
+# RI = Released from Isolation
+
+# Download and import the data
+if((as.Date(file.info(RIFile)$ctime) < as.Date(Sys.Date())) | !isTRUE(preventMultipleDownload)) {
+  download.file(RIURL, RIFile, "auto") # might switch to curl to support Windows
+} else {
+  print("Download skipped as RIFile already downloaded today")
+}
+if(file.exists(RIFile)) {
+  print(paste("RIFile found, created on:", file.info(RIFile)$ctime))
+} else {
+  stop(RIFile, " does not exist") # not the best way to stop (if it even stops!)
+}
+datRI <- read.csv(RIFile, sep = ",", colClasses = c("integer", "Date", "integer"))
+datRI$DATE <- as.Date(datRI$DATE)
+print(paste("Latest data point in RIFile:", max(datRI$DATE)))
+
+# Cleanup
+datRI$OBJECTID <- NULL
+colnames(datRI) = c("Date", "Patients")
+
+# small digression: keeping the last row for the annotations
+datRIlast <- tail(datRI, n = 1)
+
+t <- ggplot(datRI, aes(x = Date, y = Patients)) +
+  geom_line(lwd = 1) +
+  theme_linedraw() +
+  theme(legend.position = "bottom") + 
+  annotate("text", label = paste("Latest data:", datRIlast$Date, "\n",
+                                 format(datRIlast$Patients, scientific = FALSE, big.mark = ","), "patients"),
+           x = datRIlast$Date - 10,
+           y = datRIlast$Patients / 3 * 2,
+           size = 3, fontface = "italic") +
+  labs(title = "Evolution of patients released from home isolation in Maryland, USA (2020)",
+       x = "Date",
+       y = "Number of patients released from home isolation")
+#t
+
+# Is there a slow down or an acceleration of released from isolation?
+
+deltaF <- function(x, na.rm = FALSE) (x - lag(x, default = 0))
+dt <- datRI
+dt <- mutate_all(dt[2:length(dt)], ~ deltaF(.))
+dt <- cbind(dt, Date = datRI$Date) # this is risky (desync?) but adds Date as the last column
+
+# small digression: keeping the last row for the annotations
+dtlast <- tail(dt, n = 1)
+
+u <- ggplot(dt, aes(x = Date, y = Patients)) +
+  geom_line() +
+  theme_linedraw() +
+  geom_smooth(mapping = aes(x = Date, y = Patients)) +
+  theme(legend.position = "bottom") + 
+  annotate("text", label = paste("Latest date:", dtlast$Date, "\n",
+                                 format(round(dtlast$Patients, 0), nsmall = 0), "patients"),
+           x = dtlast$Date - 10,
+           y = max(dt$Patients) + 5,
+           size = 3, fontface = "italic") +
+  labs(title = "Evolution of daily patients released from home isolation in Maryland, USA (2020)",
+       x = "Date",
+       y = "Number of patients released from home isolation",
+       caption = paste("Explanations at https://jepoirrier.org/mdcovid19/ ; data from https://coronavirus.maryland.gov/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
+#u
+
+v <- ggarrange(t, u, heights = c(1, 1), 
+               ncol = 1, nrow = 2, align = "v")
+#v
+ggsave("../figures/cases-released.png", plot = v, device = "png", width = plotWidth, height = plotHeightLong, units = "in")
+
+# Does daily cases and releases match or are delayed?
+
+dtC <- merge(dt, dfD[, c("Date", "Reported positive (ESSENCE)")] , by = "Date")
+colnames(dtC) <- c("Date", "Patients released", "Patients tested positive")
+
+cols2pivot <- colnames(dtC)
+cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
+
+dtCp <- pivot_longer(data = dtC, cols = cols2pivot, names_to = "Type", values_to = "Count", values_drop_na = TRUE)
+
+w <- ggplot(dtCp, aes(x = Date, y = Count)) +
+  geom_line(aes(color = Type), lwd = 1) +
+  #geom_point(aes(color = Tests, shape = `Reporting Type`)) +
+  theme_linedraw() +
+  theme(legend.position = "bottom") + 
+  labs(title = "Daily positive cases & released from home isolation in Maryland, USA (2020)",
+       x = "Date",
+       y = "Number of patients",
+       caption = paste("Explanations at https://jepoirrier.org/mdcovid19/ ; data from https://coronavirus.maryland.gov/ ; last update:", format(Sys.Date(), "%b %d, %Y")))
+#w
+ggsave("../figures/cases-pos-rel-delay.png", plot = w, device = "png", width = plotWidth, height = plotHeight, units = "in")
