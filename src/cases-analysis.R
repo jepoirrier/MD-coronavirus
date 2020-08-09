@@ -141,6 +141,8 @@ df <- merge(df, datCT, by = "Date")
 dfC <- df[, c("Date", "Positives", "Negatives", "EPositives", "ENegatives")] # C = Cumulative
 colnames(dfC) <- c("Date", "Reported positive (ESSENCE)", "Reported negative (NEDSS)", "Electronic positive", "Electronic negative")
 
+dfClast <- tail(dfC, n = 1)
+
 cols2pivot <- colnames(dfC)
 cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
 
@@ -153,6 +155,14 @@ p <- ggplot(dfCp, aes(x = Date, y = `Cumulative Count`, group = Tests)) +
   #geom_point(aes(color = Tests, shape = `Reporting Type`)) +
   theme_linedraw() +
   theme(legend.position = "bottom") + 
+  annotate("text", label = paste("On", dfClast$Date, ":\n",
+                                 format(dfClast$`Reported positive (ESSENCE)`, scientific = FALSE, big.mark = ","), "reported positive (ESSENCE),\n",
+                                 format(dfClast$`Electronic positive`, scientific = FALSE, big.mark = ","), "electronic positive,\n",
+                                 format(dfClast$`Reported negative (NEDSS)`, scientific = FALSE, big.mark = ","), "reported negative (NEDSS),\n",
+                                 format(dfClast$`Electronic negative`, scientific = FALSE, big.mark = ","), "electronic negative"),
+           x = dtDlast$Date - 20,
+           y = 5000,
+           size = 4, fontface = "italic") +
   labs(title = "Evolution of total Coronavirus cases by test result in Maryland, USA (2020)",
        x = "Date",
        y = paste("Cumulative cases", logWarning))
@@ -162,6 +172,8 @@ p <- ggplot(dfCp, aes(x = Date, y = `Cumulative Count`, group = Tests)) +
 
 dfD <- df[, c("Date", "DPositives", "EDPositives")]
 colnames(dfD) <- c("Date", "Reported positive (ESSENCE)", "Electronic positive")
+
+dfDLast <- tail(dfD, n = 1)
 
 cols2pivot <- colnames(dfD)
 cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
@@ -173,6 +185,19 @@ q <- ggplot(dfDp, aes(x = Date, y = `Daily Count`, group = Type)) +
   geom_point(aes(color = Type, shape = Type)) +
   theme_linedraw() +
   theme(legend.position = "bottom") + 
+  # Annotation for broadening tests
+  annotate("segment", x = as.Date("200519", "%y%m%d"), y = 200,
+           xend = as.Date("200519", "%y%m%d"), yend = 0,
+           size = 0.5, arrow = arrow(length = unit(.2, "cm"))) +
+  annotate("text", label = "Testing broadening\nMay 19, 2020",
+           x = as.Date("200519", "%y%m%d"), y = 250,
+           size = 2, fontface = "italic") +
+  annotate("text", label = paste("On", dfDLast$Date, ":\n",
+                                 format(dfDLast$`Reported positive (ESSENCE)`, scientific = FALSE, big.mark = ","), "reported positive (ESSENCE),\n",
+                                 format(dfDLast$`Electronic positive`, scientific = FALSE, big.mark = ","), "electronic positive"),
+           x = dtDlast$Date - 20,
+           y = 1750,
+           size = 4, fontface = "italic") +
   labs(title = "Evolution of daily Coronavirus positive cases in Maryland, USA (2020)",
        x = "Date",
        y = "# positive cases reported",
