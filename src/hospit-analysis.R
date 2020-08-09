@@ -16,6 +16,7 @@ library(ggseas) # for decompose
 library(ini)
 library(scales) # for x-axis ticks
 library(tidyr)
+library(MMWRweek) # to read CDC data on hospitalization and age
 
 print("Entering hospit-analysis.R")
 
@@ -225,4 +226,57 @@ w <- ggarrange(t, u, v, heights = c(1, 1),
                ncol = 1, nrow = 3, align = "v")
 #w
 ggsave("../figures/hospit-CSPDaily.png", plot = w, device = "png", width = plotWidth, height = plotHeight, units = "in")
+
+
+
+### CDC gives hospitalization by age group from 100% coverage of Maryland:
+# Article: https://www.cdc.gov/coronavirus/2019-ncov/covid-data/covid-net/purpose-methods.html
+# Interactive graph: https://gis.cdc.gov/grasp/COVIDNet/COVID19_3.html
+# I didn't find how to automate data retrieval --> save it in data-other-sources/CDC-hospit-age.csv
+# Then delete the 2 first lines + disclaimer @ bottom and name this CDC-hospit-age2.csv
+
+CDCDataHospAgeUpdated = "2020-08-09" # Manually update this date when re-downloading the data above
+
+HAFile <- "../data-other-sources/CDC-hospit-age2.csv"
+# HA = hospitalization age
+
+if(file.exists(HAFile)) {
+  print(paste("HAFile found, created on:", file.info(HAFile)$ctime))
+} else {
+  stop(HAFile, " does not exist") # not the best way to stop (if it even stops!)
+}
+
+datHA <- read.csv(HAFile, sep = ",", na.strings = "null", colClasses = c("character", "character", "character", "integer", "integer", "character", "numeric", "numeric"))
+
+# Note we keep MMWR year/week to reconstruct the date, we drop cumulative rate and all other columns:
+datHA <- subset(datHA, CATCHMENT == "Maryland", select = c("CATCHMENT", "MMWR.YEAR", "MMWR.WEEK", "AGE.CATEGORY", "WEEKLY.RATE"))
+datHA$CATCHMENT <- NULL
+
+datHA <- cbind(datHA, mapply(function(x, y) MMWRweek2Date(x, y), datHA$MMWR.YEAR, datHA$MMWR.WEEK))
+datHA$MMWR.YEAR <- NULL
+datHA$MMWR.WEEK <- NULL
+colnames(datHA) <- c("Age Group", "Weekly Rate", "Date")
+datHA$Date <- as.Date(datHA$Date, origin = "1970-01-01")
+
+# Removing NAs
+datHA <- datHA[!is.na(datHA$`Weekly Rate`),]
+# Removing age categories too broad:
+datHA <- datHA[!(datHA$`Age Group` == "18-49 yr" | datHA$`Age Group` == "65+ yr" | datHA$`Age Group` == "Overall"),]
+# Re-order the age levels
+datHA$`Age Group` <- factor(datHA$`Age Group`, levels = c("0-4 yr", "5-17 yr", "18-29 yr", "30-39 yr", "40-49 yr", "50-64 yr", "65-74 yr", "75-84 yr", "85"))
+# And rename "85" to "85+"
+levels(datHA$`Age Group`)[levels(datHA$`Age Group`) == "85"] <- "85+"
+
+
+x <- ggplot(datHA, aes(x = Date, y = `Weekly Rate`, group = `Age Group`)) +
+  geom_line(aes(color = `Age Group`), lwd = 1) +
+  geom_point(aes(color = `Age Group`, shape = `Age Group`)) +
+  theme_linedraw() +
+  labs(title = "Weekly hospitalization rates by age group in Maryland, USA (2020)",
+       x = "Date",
+       y = "Rate (per 100,000 population)",
+       caption = paste("Explanations at https://jepoirrier.org/mdcovid19/ ; data from CDC ; last update:", CDCDataHospAgeUpdated))
+x
+
+ggsave("../figures/hospit-CDCAge.png", plot = x, device = "png", width = plotWidth, height = plotHeight, units = "in")
 
