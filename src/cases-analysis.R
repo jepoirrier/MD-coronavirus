@@ -160,7 +160,7 @@ p <- ggplot(dfCp, aes(x = Date, y = `Cumulative Count`, group = Tests)) +
                                  format(dfClast$`Electronic positive`, scientific = FALSE, big.mark = ","), "electronic positive,\n",
                                  format(dfClast$`Reported negative (NEDSS)`, scientific = FALSE, big.mark = ","), "reported negative (NEDSS),\n",
                                  format(dfClast$`Electronic negative`, scientific = FALSE, big.mark = ","), "electronic negative"),
-           x = dtDlast$Date - 20,
+           x = dfClast$Date - 20,
            y = 5000,
            size = 4, fontface = "italic") +
   labs(title = "Evolution of total Coronavirus cases by test result in Maryland, USA (2020)",
@@ -195,7 +195,7 @@ q <- ggplot(dfDp, aes(x = Date, y = `Daily Count`, group = Type)) +
   annotate("text", label = paste("On", dfDLast$Date, ":\n",
                                  format(dfDLast$`Reported positive (ESSENCE)`, scientific = FALSE, big.mark = ","), "reported positive (ESSENCE),\n",
                                  format(dfDLast$`Electronic positive`, scientific = FALSE, big.mark = ","), "electronic positive"),
-           x = dtDlast$Date - 20,
+           x = dfDLast$Date - 20,
            y = 1750,
            size = 4, fontface = "italic") +
   labs(title = "Evolution of daily Coronavirus positive cases in Maryland, USA (2020)",
