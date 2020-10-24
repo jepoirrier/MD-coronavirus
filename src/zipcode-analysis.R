@@ -63,7 +63,7 @@ print(paste("Latest data point in ZipFile:", max(dt$Date)))
 p <- ggplot(dt, aes(x = Date, y = Cases, group = ZIPCODE)) +
   geom_line(aes(color = ZIPCODE)) +
   #gghighlight(ZipCode == zip2highlight) +
-  gghighlight(Cases > 1000, label_key = ZIPCODE) +
+  gghighlight(Cases > 3000, label_key = ZIPCODE) +
   theme_linedraw() +
   theme(legend.position = "none") +
   labs(title = "Evolution of Coronavirus positive cases by zip codes in Maryland, USA (2020)",
