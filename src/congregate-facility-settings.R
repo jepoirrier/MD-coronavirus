@@ -32,6 +32,174 @@ logScale <- FALSE
 if (logScale)
   logWarning <- " (log scale!)"
   
+### SHOULD HAVE RUN cfs-recumulative.py FIRST!
+### Cases
+
+CDCFile <- "../data/cfs-cases.csv"
+
+if(file.exists(CFCFile)) {
+  print(paste("CFCFile found, created on:", file.info(CFCFile)$ctime))
+} else {
+  stop(CFCFile, " does not exist") # not the best way to stop (if it even stops!)
+}
+
+datCFC <- read.csv(CFCFile, header = FALSE, sep = ";", colClasses = c("character", "character", "character", "integer", "integer", "integer", "integer", "integer", "integer"))
+colnames(datCFC) <- c("Date", "County", "Facility", "GHStaff", "GHResidents", "SLAFStaff", "SLAFPatients", "SLAFInmates", "SLAFYouth")
+# Removing the articicially introduced date of "2020/04/28"
+datCFC <- datCFC[- grep("2020/04/28", datCFC$Date),]
+datCFC$Date <- as.Date(datCFC$Date)
+print(paste("Latest data point in CFCFile:", max(datCFC$Date)))
+
+
+
+# Small test on Nov. 14: try a facility that initially reported then stopped reporting
+# This graph can be removed if needed, just for illustration purpose (and blog post)
+
+datFold <- read.csv("../data/cfs-cases-o.csv", header = TRUE, sep = ",", colClasses = c("integer", "character", "character", "character", "integer", "integer", "integer", "integer", "integer", "integer"))
+colnames(datFold) <- c("ObjectID", "Date", "County", "Facility", "GHStaff", "GHResidents", "SLAFStaff", "SLAFPatients", "SLAFInmates", "SLAFYouth")
+datFold$ObjectID <- NULL
+datFold$Date <- as.Date(datFold$Date)
+print(paste("Latest data point in CFCFile:", max(datFold$Date)))
+tmp <- datFold[datFold$Facility == "Sterling Care Frostburg Village", ] # 2nd in dataset and stopped reporting on 6/10
+# then follow 2 lines below
+
+tmp <- datCFC[datCFC$Facility == "Cumberland Healthcare Center", ] # 1st in dataset but reported until the end
+tmp <- datCFC[datCFC$Facility == "Sterling Care Frostburg Village", ] # 2nd in dataset and stopped reporting on 6/10
+tmp$`SLAFStaff` <- NULL
+tmp$`SLAFPatients` <- NULL
+tmp$`SLAFInmates` <- NULL
+tmp$`SLAFYouth` <- NULL
+tmp$County <- NULL
+tmp$Facility <- NULL
+
+cols2pivot <- colnames(tmp)
+cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
+
+dtRel <- pivot_longer(data = tmp, cols = cols2pivot, names_to = "Category", values_to = "Cases", values_drop_na = TRUE)
+
+z <- ggplot(dtRel, aes(x = Date, y = Cases, group = Category)) +
+  #expand_limits(x = c(as.Date("04/25/20", "%m/%d/%y"), as.Date("06/25/20", "%m/%d/%y"))) +
+  geom_line(aes(color = Category), lwd = 1) +
+  geom_point(aes(color = Category, shape = Category)) +
+  theme_linedraw() +
+  labs(title = "Evolution of COVID-19 cases in Sterling Care Frostburg Village (Allegany)",
+       x = "Date",
+       y = "Cumulative cases",
+       caption = paste("Graph created to illustrate the removal of facilities in MD data when reporting stop for > 14 days\nExplanations at https://jepoirrier.org/mdcovid19/ ; data from https://coronavirus.maryland.gov/ ; last data update:", format(max(datCFC$Date), "%b %d, %Y")))
+z
+# choose between -original or -fixed in filename:
+#ggsave("../figures/cfs-SterlingCare-original/fixed.png", plot = z, device = "png", width = plotWidth, height = plotHeight, units = "in")
+
+
+
+# Resuming to display cumulative counts:
+colnames(datCFC) <- c("Date", "County", "Facility", "Nursing Staff", "Nursing Residents", "State/Local Staff", "State/Local Patients", "State/Local Inmates", "State/Local Youth")
+
+# create a Total
+datCFC$Total <- rowSums(datCFC[, c("Nursing Staff", "Nursing Residents", "State/Local Staff", "State/Local Patients", "State/Local Patients", "State/Local Inmates", "State/Local Youth")], na.rm = TRUE)
+
+datCF <- datCFC
+datCF$County <- NULL
+datCF$Facility <- NULL
+datCF$`Nursing Staff` <- NULL
+datCF$`Nursing Residents` <- NULL
+datCF$`State/Local Staff` <- NULL
+datCF$`State/Local Patients` <- NULL
+datCF$`State/Local Patients` <- NULL
+datCF$`State/Local Inmates` <- NULL
+datCF$`State/Local Youth` <- NULL
+
+datCF <- datCF %>%
+  group_by(Date) %>% 
+  summarise(across(everything(), sum))
+
+p <- ggplot(datCF, aes(x = Date, y = Total)) +
+  geom_line(lwd = 1) +
+  labs(title = "Evolution of total cases in Congregate Facility Settings in Maryland, USA (2020)",
+       x = "Date",
+       y = "Cumulative cases")
+p
+
+
+
+# Cumulative by category of case
+datCF <- datCFC
+datCF$County <- NULL
+datCF$Facility <- NULL
+datCF$Total <- NULL
+
+datCF <- datCF %>%
+  group_by(Date) %>% 
+  summarise_each(funs(sum(., na.rm = TRUE)))
+  
+cols2pivot <- colnames(datCF)
+cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
+
+dtCF2 <- pivot_longer(data = datCF, cols = cols2pivot, names_to = "Categories", values_to = "Cases", values_drop_na = TRUE)
+
+q <- ggplot(dtCF2, aes(x = Date, y = Cases, group = Categories)) +
+  geom_line(aes(color = Categories), lwd = 1) +
+  geom_point(aes(color = Categories, shape = Categories)) +
+  labs(x = "Date",
+       y = "Cumulative cases",
+       caption = paste("Explanations at https://jepoirrier.org/mdcovid19/ ; data from https://coronavirus.maryland.gov/ ; last data update:", format(max(datCFC$Date), "%b %d, %Y")))
+
+q
+
+r <- ggarrange(p, q, heights = c(1, 1), 
+               ncol = 1, nrow = 2, align = "v")
+r
+ggsave("../figures/cfs-totals.png", plot = r, device = "png", width = plotWidth, height = plotHeightLong, units = "in")
+
+  
+# arrived HERE - use below at your risk ;-)
+
+summarise(across(everything(), sum))
+
+### Graph CASES
+
+cols2pivot <- colnames(datCF)
+cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
+
+dtCF2 <- pivot_longer(data = datCF, cols = cols2pivot, names_to = "Categories", values_to = "Cases", values_drop_na = TRUE)
+
+p <- ggplot(dtCF, aes(x = Date, y = Cases, group = Categories)) +
+  geom_line(aes(color = Categories), lwd = 1) +
+  geom_point(aes(color = Categories, shape = Categories)) +
+  {if(logScale) scale_y_log10()} +
+  {if(logScale) annotation_logticks()} +
+  theme_linedraw() +
+  labs(title = "Evolution of total cases in Congregate Facility Settings in Maryland, USA (2020)",
+       x = "Date",
+       y = "Cumulative cases")
+p
+
+
+
+# Aggregate by date
+
+datCF <- datCFC %>%
+  na.omit() %>%
+  group_by(Date) %>% 
+  summarise(across(everything(), sum))
+  
+  # tried other stuff:
+  summarise_at(vars(GHStaff), list(GHStaff = sum))
+  summarise(GHStaffsum = sum(GHStaff)) %>% 
+  summarise(GHResidents = sum(GHResidents)) %>% 
+  summarise(SLAFStaff = sum(SLAFStaff)) %>% 
+  summarise(GHStaff = sum(SLAFPatients)) %>% 
+  summarise(SLAFInmates = sum(SLAFInmates)) %>% 
+  summarise(SLAFYouth = sum(SLAFYouth))
+  
+  select(GHStaff, GHResidents, SLAFStaff, SLAFPatients, SLAFInmates, SLAFYouth) %>% 
+  summarize_each(sum)
+
+  summarise_at(vars(GHStaff, GHResidents, SLAFStaff, SLAFPatients, SLAFInmates, SLAFYouth), 
+               list(GHStaff = sum, GHResidents = sum, SLAFStaff = sum, SLAFPatients = sum, SLAFInmates = sum, SLAFYouth = sum))
+
+
+
 
 # CUMULATIVE CURRENT cases confirmed
 # CFC = congregate facility settings cases
@@ -61,30 +229,10 @@ print(paste("Latest data point in CFCFile:", max(datCFC$DATE)))
 datCFC$OBJECTID <- NULL
 # rename headers
 colnames(datCFC) <- c("Date", "Nursing Staff", "Nursing Residents", "State/Local Staff", "State/Local Patients", "State/Local Inmates", "State/Local Youth")
-# create a Total
-datCFC$Total <- datCFC$`Nursing Staff` + datCFC$`Nursing Residents` +
-  datCFC$`State/Local Staff` + datCFC$`State/Local Patients` + datCFC$`State/Local Patients` +
-  datCFC$`State/Local Inmates` + datCFC$`State/Local Youth`
 
-### Graph CASES
-
-cols2pivot <- colnames(datCFC)
-cols2pivot <- cols2pivot[2:length(cols2pivot)] # we don't need "Date"
-
-dtCFC <- pivot_longer(data = datCFC, cols = cols2pivot, names_to = "Categories", values_to = "Cases", values_drop_na = TRUE)
-
-p <- ggplot(dtCFC, aes(x = Date, y = Cases, group = Categories)) +
-  geom_line(aes(color = Categories), lwd = 1) +
-  geom_point(aes(color = Categories, shape = Categories)) +
-  {if(logScale) scale_y_log10()} +
-  {if(logScale) annotation_logticks()} +
-  theme_linedraw() +
-  labs(title = "Evolution of total current* cases in Congregate Facility Settings in Maryland, USA (2020)",
-       x = "Date",
-       y = "Cumulative current* cases")
-p
-
-
+#
+# ... CODE taken in new version (above)
+#
 
 # CUMULATIVE CURRENT deaths confirmed
 # CFD = congregate facility settingsdeaths
@@ -285,105 +433,8 @@ ggsave("../figures/cfs-SterlingCare.png", plot = z, device = "png", width = plot
 # End of test
 # TODO redo the test once I get the right algorithm
 
-stop("Stop here! Work in progress!")
-
-# Woke up during the night to this algorithm:
-# For each date: {
-# For each facility: {
-#   
-#   If date + facility = value: {
-#     1. write date, facility, values to resulting DF
-#     2. write them also to max DF (but check if not lower value than in max DF in case MDH messed with counts)
-#     Else (case date + facility = no value): {
-#       If max DF has value for date+facility:
-#         Then write these date+facility+max values (= the facility dropped from counts and needs to be reinstated)
-#       (Else do nothing: facility had never any case yet)
-#     } end else
-#       
-#       ) end each facility
-#   } end each date
-#   
-#   Now we can sum all cases by date
-
-#Create a final, resulting DF, empty
-datCFFinal <- data.frame(a = as.Date(x = integer(0), origin = "1970-01-01"), b = character(0), c = integer(0), d = integer(0), e = integer(0), f = integer(0), g = integer(0), h = integer(0))
-colnames(datCFFinal) <- c("Date", "Facility", "Nursing Staff", "Nursing Residents", "State/Local Staff", "State/Local Patients", "State/Local Inmates", "State/Local Youth")
-
-#Create a DF for current max value - we don't care of the date
-datCFMax <- data.frame(b = character(0), c = integer(0), d = integer(0), e = integer(0), f = integer(0), g = integer(0), h = integer(0))
-colnames(datCFMax) <- c("Facility", "Nursing Staff", "Nursing Residents", "State/Local Staff", "State/Local Patients", "State/Local Inmates", "State/Local Youth")
-
-#List all unique date
-uniqueDates <- sort(unique(datCF$Date))
-#List all unique facility
-uniqueFacilities <- sort(unique(datCF$Facility))
-
-library(iterators)
-library(itertools)
-
-itDate <- ihasNext(uniqueDates)
-itFacility <- ihasNext(uniqueFacilities)
-
-# for each date:
-while(hasNext(itDate)) {
-  currentDate <- nextElem(itDate)
-  print(currentDate)
-  
-  # for each facility:
-  while(hasNext(itFacility)) {
-    currentFacility <- nextElem(itFacility)
-    
-    # if date + facility has a value:
-    if((datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`Nursing Staff` >= 0) !
-       is.na(datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`Nursing Staff`)) {
-    
-      # write date, facility and values to the resulting DF
-         newrow <- c(currentDate, currentFacility,
-                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`Nursing Staff`,
-                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`Nursing Residents`,
-                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Staff`,
-                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Patients`,
-                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Inmates`,
-                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Youth`)
-         datCFFinal <- rbind(datCFFinal, newrow)
-         # and also write them to the max DF (TODO check if not lower value than in max DF in case MDH messed with counts)
-         newrow2 <- c(currentFacility,
-                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`Nursing Staff`,
-                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`Nursing Residents`,
-                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Staff`,
-                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Patients`,
-                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Inmates`,
-                     datCF[datCF$Date == as.Date(currentDate) & datCF$Facility == currentFacility,]$`State/Local Youth`)
-         datCFMax <- rbind(datCFMax, newrow2)
-    } else {
-      # here: case date + facility = no value (integer(0))
-      
-      # If max DF has value for facility:
-      
-      #         Then write these date+facility+max values (= the facility dropped from counts and needs to be reinstated)
-      #       (Else do nothing: facility had never any case yet)
-         
-       }
-  } # end each facility
-} # end each date
-
-# now we can sum all cases by date
-# NPO check with Sterling Care
-
-# PROBABLY WRONG BELOW ...
-
-### ARRIVED HERE but I need to go to sleep
-###
-### The example with z below doesn't work because it is impacted by facilities that are removed at later date(s)
-###
-### The idea would be to keep the datCF$Facility and ...
-# for the 1st day, make a list of all facilities and their numbers
-# for each subsequent day, compare facilities in this list to facilities in this day:
-# either 1) the facility is still there -> update for this day with (latest) number
-# or 2) the facility is not there anymore -> take the latest numbers (from previous day) and paste them here for this facility
-# with this new dataframe, then we can summarise_all() like I'm currently doing for z below
-### After that, display p, q, r, s, t, u with new cumulative cases
-### and delete MD-coronavirus-nursing.txt and associated figures
+#stop("Stop here! Work in progress!")
+# REMOVED PSEUDO CODE now in Python
 
 # Continuing to display new cumulative numbers
 # Now we don't need facilities anymore

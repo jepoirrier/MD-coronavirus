@@ -11,4 +11,6 @@ source("races-analysis.R")
 source("zipcode-analysis.R")
 source("county-analysis.R")
 source("contacttracing-analysis.R")
+
+# please run cfs-recumulative.py BEFORE the next one
 source("congregate-facility-settings.R")
