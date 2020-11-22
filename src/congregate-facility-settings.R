@@ -35,7 +35,7 @@ if (logScale)
 ### SHOULD HAVE RUN cfs-recumulative.py FIRST!
 ### Cases
 
-CDCFile <- "../data/cfs-cases.csv"
+CFCFile <- "../data/cfs-cases.csv"
 
 if(file.exists(CFCFile)) {
   print(paste("CFCFile found, created on:", file.info(CFCFile)$ctime))
