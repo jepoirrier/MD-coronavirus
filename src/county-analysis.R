@@ -76,7 +76,7 @@ colnames(datC1) <- C1cols
 cols2pivot <- C1cols[2:length(C1cols)] # we don't need the county here
 dt <- pivot_longer(data = datC1, cols = cols2pivot, names_to = "Date", values_to = "Tests", values_drop_na = TRUE)
 dt$Date <- as.character(dt$Date)
-dt$Date <- as.Date(sprintf("%s",dt$Date), "%m_%d_%y")
+dt$Date <- as.Date(sprintf("%s",dt$Date), "%m_%d_%Y")
 print(paste("Latest data point in C1File:", max(dt$Date)))
 
 # CHART ALL COUNTIES TESTS over time
